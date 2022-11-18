@@ -46,13 +46,16 @@
       </el-card>
     </el-col>
   </el-row>
-
 </template>
 
 <script>
 export default {
   name: "bookAdd"
 }
+</script>
+<script setup>
+import {ref, reactive, onMounted} from "vue";
+let vs=ref(false);
 </script>
 
 <style scoped>

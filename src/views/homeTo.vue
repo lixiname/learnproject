@@ -32,8 +32,8 @@
               <el-sub-menu index="2" >
                 <template #title>课程管理</template>
                 <el-menu-item-group class="menu-group">
-                  <el-menu-item index="2-1" >20：20 第三节课</el-menu-item>
-                  <el-menu-item index="2-2" >20：30 第四节课</el-menu-item>
+                  <el-menu-item index="2-1" route="/home/knowledgeSummary">资料上传</el-menu-item>
+                  <el-menu-item index="2-2" route="/home/knowledgeStudySituation">班级学习情况</el-menu-item>
                 </el-menu-item-group>
               </el-sub-menu>
               <el-sub-menu index="3" >
