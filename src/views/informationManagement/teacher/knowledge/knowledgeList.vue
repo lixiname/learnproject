@@ -32,7 +32,6 @@
         <template #default="scope">
           <el-icon color="rgb(244,192,70)"><Folder /></el-icon>
           <span>{{scope.row.folderName}}</span>
-
         </template>
       </el-table-column>
       <el-table-column label="上传者" prop="folderAuthor" sortable></el-table-column>
@@ -194,7 +193,7 @@ let form=reactive({
   inputSearch:''
 });
 let submitSearch=()=>{
-  let folderAuthor='xw';
+  let folderAuthor='chen';
   console.log("search folderName success");
   request.get("/home/knowledgeList/filterFolder",{
     data:{

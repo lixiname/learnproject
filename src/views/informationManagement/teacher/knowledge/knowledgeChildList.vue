@@ -1,13 +1,20 @@
 <template>
   <div style="height: 100%;">
+    <div v-if="visible==true">
+      <el-alert
+          title="早已提交过请勿重复提交"
+          type="warning"
+          show-icon>
+      </el-alert>
+    </div>
     <el-dialog
         v-model="dialogVisible"
-        width="20%"
-        style="height: 30%"
+        width="30%"
+        style="height: 40%"
     >
       <el-card>
         <template #header>
-          选择要发布的班级
+          发布信息
         </template>
         <el-dropdown @command="handleSelectTermCommand">
           <el-button>
@@ -28,6 +35,17 @@
             </el-checkbox>
           </span>
         </el-checkbox-group>
+        <span >选择时间段</span>
+        <el-date-picker
+            v-model="timeRange"
+            type="datetimerange"
+            range-separator="到"
+            start-placeholder="开始时间"
+            end-placeholder="截止时间"
+        />
+
+        <el-input v-model="studyFileName" placeholder="为发布的内容起名">
+        </el-input>
         <el-button style="width: 100%" @click="submitSelectClassroomAndPublication">确认发布</el-button>
       </el-card>
     </el-dialog>
@@ -148,12 +166,12 @@
               <el-button size="small" type="success" @click="submitUpLoadList">上传全部文件</el-button>
             </el-col>
           </el-row>
-
         </el-upload>
       </el-col>
     </el-row>
 
   </div>
+
 
 
 </template>
@@ -246,12 +264,25 @@ let roomListCheck=ref();
 let classroomList=ref();
 let dialogVisible=ref(false);
 let publicationItemIndex=0;
+let visible=ref(false);
+const timeRange = ref([
+  new Date(2000, 10, 10, 10, 10),
+  new Date(2000, 10, 11, 10, 10),
+])
 let submitPublication=(index)=>{
-  dialogVisible.value=true;
+  if(fileList.value[index].publication==false){
+    dialogVisible.value=true;
+    visible.value=false;
+  }
+  else{
+    console.log('exist this tuple');
+    visible.value=true;
+  }
   publicationItemIndex=index;
 
 }
 let term=ref();
+let studyFileName=ref();
 let submitSelectClassroomAndPublication=()=>{
   request.post("/home/knowledgeList/publicateToClassroom",{
     folderName:folderName,
@@ -260,7 +291,10 @@ let submitSelectClassroomAndPublication=()=>{
     acadmey:'computer',
     term:term.value,
     roomList:roomListCheck.value,
-    downLoadNumber:0
+    downLoadNumber:0,
+    dateStart:'2022-9-10',
+    dateEnd:'2022-9-15',
+    studyFileName:studyFileName.value
   }).then(res=>{
     console.log("res.data.publicationKnowledgeData");
     console.log(res.data.publicationKnowledgeData);

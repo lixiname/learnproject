@@ -4,23 +4,35 @@
       <el-tab-pane label="登录" >
         <el-form
             label-position="right"
-            label-width="60px"
-            style="max-width: 460px"
+            label-width="70px"
+            style="max-width: 500px"
+            :model="form"
+            :rules="formRule"
         >
-          <el-form-item label="邮箱：">
-            <el-input v-model="email" placeholder="xxx@xxx.com" >
+          <el-form-item label="工号：" prop="idCard">
+            <el-input v-model="form.idCard" placeholder="11位" >
             <template #prefix>
               <el-icon><User /></el-icon>
             </template>
             </el-input>
           </el-form-item>
-          <el-form-item label="密码：">
-            <el-input type="password" placeholder="至少8位" show-password="true" v-model="password" >
+          <el-form-item label="密码：" prop="password">
+            <el-input type="password" placeholder="至少8位" show-password="true" v-model="form.password" >
             <template #prefix>
               <el-icon><Lock /></el-icon>
             </template>
             </el-input>
           </el-form-item>
+          <el-form-item label="身份：" prop="radioIdentity"
+          @change="radioChange">
+            <el-radio-group v-model="form.radioIdentity">
+              <el-radio label="1"  >老师</el-radio>
+              <el-radio label="2"  >学生</el-radio>
+              <el-radio label="3"  >管理员</el-radio>
+              <el-radio label="4"  >超级</el-radio>
+            </el-radio-group>
+          </el-form-item>
+
           <el-form-item>
               <el-checkbox
                   class="checkBox"
@@ -34,10 +46,7 @@
             <el-collapse v-model="array">
               <el-collapse-item name="1" title="详情">
                 <el-scrollbar height="100px">
-                  同意用户使用准则content同意用户使用准则content同意用户使用准则content同意用户使用准则content同意用户使用准则content
-                  同意用户使用准则content同意用户使用准则content同意用户使用准则content同意用户使用准则content同意用户使用准则content
-                  同意用户使用准则content同意用户使用准则content同意用户使用准则content同意用户使用准则content同意用户使用准则content
-                  同意用户使用准则content同意用户使用准则content同意用户使用准则content同意用户使用准则content同意用户使用准则content
+                  同意用户使用准则content
                 </el-scrollbar>
 
               </el-collapse-item>
@@ -112,10 +121,7 @@
             <el-collapse v-model="array">
               <el-collapse-item name="1" title="详情">
                 <el-scrollbar height="100px">
-                  同意用户使用准则content同意用户使用准则content同意用户使用准则content同意用户使用准则content同意用户使用准则content
-                  同意用户使用准则content同意用户使用准则content同意用户使用准则content同意用户使用准则content同意用户使用准则content
-                  同意用户使用准则content同意用户使用准则content同意用户使用准则content同意用户使用准则content同意用户使用准则content
-                  同意用户使用准则content同意用户使用准则content同意用户使用准则content同意用户使用准则content同意用户使用准则content
+                  同意用户使用准则content
                 </el-scrollbar>
 
               </el-collapse-item>
@@ -140,26 +146,170 @@ export default {
   name: "loginRegister",
   data(){
     return{
-      email:'',
       isAgree:false,
-      password:'',
       array:['1','2','3'],
       userNormContent:''
     }
   },
   methods:{
-    login:function (){
-      //window.location.href='/home';
-      console.log('to');
-      this.$router.push({path:'/home'});
-
-    },
+    // login:function (){
+    //   //window.location.href='/home';
+    //   console.log('to');
+    //   this.$router.push({path:'/home'});
+    //
+    // },
     NormContent:function (){
       console.log('content');
     }
 
   }
 }
+</script>
+<script setup>
+import {setTokenID,setTokenN,setTokenIdentity} from '../utils/auth.js'
+import {ref, reactive, onMounted} from "vue";
+import { useRouter } from 'vue-router';
+import request from "../http/request.js";
+let router=useRouter();
+
+// let idCard=ref();
+// let password=ref();
+// let radioIdentity=ref();
+let form=reactive({
+  idCard:'20212232145',
+  password:'12345678',
+  radioIdentity:'1'
+});
+let formRule=reactive({
+  idCard:[
+    {
+
+      min:6,
+      message:"输入长度不对"
+    },
+    {
+      type:"string",
+      required:true,
+      pattern : /^[0-9]+$/,
+      message:"只能输入数字"
+    }
+  ],
+  password:[
+    {
+      min:8,
+      message:"至少输入8位长度",
+      required:true
+    }
+  ],
+  radioIdentity:[
+
+  ]
+});
+let login=function (){
+
+  console.log(form.radioIdentity);
+  let identity=form.radioIdentity;
+  if(identity=='1'){
+    request.get("/first/loginTeacher",{
+      params:{
+        idCard:form.idCard,
+        password:form.password
+      }
+    }).then(function(res) {
+        if(res.data){
+//truth http
+          if(res.data.success=="yes"){
+            setTokenID(res.data.idCard);
+            setTokenN(res.data.name) ;
+            setTokenIdentity(res.data.identity) ;
+            router.push({path:'/home'});
+          }
+          else{
+            console.log("重新登陆");
+          }
+          console.log(res.data);
+        }
+      }).catch(function(error) {
+        console.log('login error');
+      });
+  }
+  else if(identity=='2'){
+    request.get("/first/loginStudent",{
+      params:{
+        idCard:form.idCard,
+        password:form.password
+      }
+    }).then(function(res) {
+      if(res.data){
+//truth http
+        if(res.data.success=="yes"){
+          setTokenID(res.data.idCard);
+          setTokenN(res.data.name) ;
+          setTokenIdentity(res.data.identity) ;
+          router.push({path:'/home'});
+        }
+        else{
+          console.log("重新登陆");
+        }
+        console.log(res.data);
+      }
+    }).catch(function(error) {
+      console.log('login error');
+    });
+  }
+  else if(identity=='3'){
+    request.get("/first/loginManagement",{
+      params:{
+        idCard:form.idCard,
+        password:form.password
+      }
+    }).then(function(res) {
+      if(res.data){
+//truth http
+        if(res.data.success=="yes"){
+          setTokenID(res.data.idCard);
+          setTokenN(res.data.name) ;
+          setTokenIdentity(res.data.identity) ;
+          router.push({path:'/home'});
+        }
+        else{
+          console.log("重新登陆");
+        }
+        console.log(res.data);
+      }
+    }).catch(function(error) {
+      console.log('login error');
+    });
+  }
+  else if(identity=='4'){
+    //teacher
+    setTokenID("20212232145");
+    setTokenN("sp") ;
+    setTokenIdentity("super") ;
+    router.push({path:'/home'});
+  }
+
+  //router.push({path:'/home'});
+};
+
+let radioChange=()=>{
+  if(form.radioIdentity=='1'){
+    form.idCard='20212232145'; form.password='12345678';
+  }
+  else if(form.radioIdentity=='2'){
+    form.idCard='20202232100'; form.password='12345678';
+  }
+  else if(form.radioIdentity=='3'){
+    form.idCard='140102'; form.password='12345678';
+  }
+  else if(form.radioIdentity=='4'){
+    form.idCard='00000001'; form.password='12345678';
+  }
+}
+
+onMounted(() => {
+  document.cookie='user=xw';
+});
 </script>
 
 <style scoped>

@@ -1,7 +1,8 @@
 //const Mock = require('mockjs');
 import Mock from 'mockjs';
 import {list} from './informationKnowledgeList.js';
-import {knowledgeFolderList,knowledgeFileList,classRoomList,teacherClassroom,publicationKnowledge} from './informationKnowledgeList.js';
+import {knowledgeFolderList,knowledgeFileList,classRoomList,teacherClassroom,publicationKnowledge,fileStudySituationList} from './informationKnowledgeList.js';
+import {bookList,bookLikeList} from './bookList.js';
 import Router from "../router";
 // 设置拦截ajax请求的相应时间
 Mock.setup({
@@ -54,6 +55,9 @@ Mock.mock(/\/home\/knowledgeList\/publicateToClassroom/,'post',function (options
     let term=Obj.term;
     let roomList=Obj.roomList;
     let downLoadNumber=Obj.downLoadNumber;
+    let dateStart=Obj.dateStart;
+    let dateEnd=Obj.dateEnd;
+    let studyFileName=Obj.studyFileName;
     for(let i=0;i<roomList.length;i++){
         publicationKnowledge.push(
             {
@@ -63,7 +67,10 @@ Mock.mock(/\/home\/knowledgeList\/publicateToClassroom/,'post',function (options
                 room:roomList[i],
                 folderName:folderName,
                 fileName:fileName,
-                downLoadNumber:downLoadNumber
+                downLoadNumber:downLoadNumber,
+                dateStart:dateStart,
+                dateEnd:dateEnd,
+                studyFileName:studyFileName
             }
         );
     }
@@ -73,6 +80,7 @@ Mock.mock(/\/home\/knowledgeList\/publicateToClassroom/,'post',function (options
         publicationKnowledgeData: publicationKnowledge
     }
 });
+
 Mock.mock(/\/home\/knowledgeList\/publicateRoomList/,'get',function (options){
     let Obj = JSON.parse(options.body);
     let folderName=Obj.folderName;
@@ -93,8 +101,6 @@ Mock.mock(/\/home\/knowledgeList\/publicateRoomList/,'get',function (options){
         publicationKnowledgeData: result
     }
 });
-
-
 
 Mock.mock(/\/home\/knowledgeList\/folder/,'get',list());
 Mock.mock(/\/home\/knowledgeList\/filterFolder/,'get',function (options){
@@ -230,6 +236,95 @@ Mock.mock(/\/home\/knowledgeList\/newFolder/,'post',function (options){
         data: knowledgeFileLists
     }
 });
+
+Mock.mock(/\/home\/knowledgeList\/studySituation/,'get',function (options){
+    let Obj = JSON.parse(options.body);
+    let teacherName = Obj.folderAuthor;
+    let acadmey = Obj.acadmey;
+    let term=Obj.term;
+    let room=Obj.room;
+    let publicationKnowledgeData=publicationKnowledge.filter(val => val.teacherName === teacherName&&val.acadmey===acadmey&&val.term===term&&val.room==room);
+    return {
+        code: '0',
+        message: 'success',
+        publicationKnowledgeData: publicationKnowledgeData
+    }
+});
+Mock.mock(/\/home\/knowledgeList\/fileStudySituationList/,'get',function (options){
+    let Obj = JSON.parse(options.body);
+    let teacherName = Obj.teacherName;
+    let acadmey = Obj.acadmey;
+    let term=Obj.term;
+    let room=Obj.room;
+    let studyFileName=Obj.studyFileName;
+    let fileStudySituationLists=fileStudySituationList.filter(val => val.teacherName === teacherName&&val.acadmey===acadmey&&
+        val.term===term&&val.room==room&&val.studyFileName==studyFileName);
+    return {
+        code: '0',
+        message: 'success',
+        fileStudySituationList: fileStudySituationLists
+    }
+});
+
+//book
+Mock.mock(/\/home\/book\/AllBooksList/,'get',function (options){
+    console.log('think');
+    console.log(options);
+    return {
+        code: '0',
+        message: 'success',
+        bookList: bookList
+    }
+});
+Mock.mock(/\/home\/book\/bookDetail/,'get',function (options){
+    let Obj = JSON.parse(options.body);
+    let bookName=Obj.bookName;
+    let publicateUserNameID=Obj.publicateUserNameID;
+    let book=bookList.filter(val => val.bookName == bookName&&val.publicateUserNameID==publicateUserNameID);
+    let onebook=book[0];
+    return {
+        code: '0',
+        message: 'success',
+        book: onebook
+    }
+});
+Mock.mock(/\/home\/book\/teacherAgreed/,'get',function (options){
+    let Obj = JSON.parse(options.body);
+    let bookName=Obj.bookName;
+    let publicateUserNameID=Obj.publicateUserNameID;
+    let userID=Obj.userID;
+    let book=bookLikeList.filter(val => val.bookName == bookName&&val.publicateUserNameID==publicateUserNameID&&val.likeNameID==userID);
+    return {
+        code: '0',
+        message: 'success',
+        book: book
+    }
+});
+
+
+
+Mock.mock(/\/home\/book\/deleteBook/,'delete',function (options){
+    let deleteObj = JSON.parse(options.body);
+    let bookName = deleteObj.bookName;
+    let publicateUserNameID = deleteObj.publicateUserNameID;
+    let deleteBookLists=bookList.filter(val => val.bookName !== bookName&&val.publicateUserNameID!==publicateUserNameID);
+    return {
+        code: '0',
+        message: 'success',
+        data: deleteBookLists
+    }
+});
+
+
+
+
+
+
+
+
+
+
+
 
 
 // let configArray = [];
