@@ -113,14 +113,15 @@
                 <template #reference>
                   <el-button
                       size="small"
-                      type="danger">
+                      type="danger"
+                  disabled>
                     删除
                   </el-button>
                 </template>
               </el-popconfirm>
             </el-col>
             <el-col :span="6" >
-              <el-button v-if="fileList[scope.$index].publication==true"
+              <el-button v-if="fileList[scope.$index].publication==1"
                          size="small"
                          type="primary"
                          plain
@@ -128,7 +129,7 @@
               >
                 已发布
               </el-button>
-              <el-button v-if="fileList[scope.$index].publication==false"
+              <el-button v-if="fileList[scope.$index].publication==0"
                          size="small"
                          type="primary"
                          plain
@@ -185,12 +186,16 @@ export default {
 import {ref, reactive, onMounted} from "vue";
 import { useRouter,useRoute } from 'vue-router';
 import request from "../../../../http/request.js";
+import {getTokenN, getTokenID, getTokenIdentity, getDateTime} from "../../../../utils/auth";
+import {teacherClassroom} from "../../../../mock/informationKnowledgeList";
 let router=useRouter();
 let route=useRoute();
 let folderName=route.query.folderName;
 let folderAuthor=route.query.folderAuthor;
-let fileList=ref();
+let teacherID=route.query.teacherID;
 
+let fileList=ref();
+fileList.value=[];
 
 let arrowUp=(scope,index, row)=>{
   let temp=fileList.value[index-1];
@@ -226,27 +231,43 @@ let upLoadList=ref();
 let upLoadCollationList=ref();
 upLoadCollationList.value=[];
 let submitUpLoadList=()=>{
+
+  let idcard=getTokenID();
+  let Name=getTokenN();
+  let identity=getTokenIdentity();
+  let datetime = getDateTime();
+
   console.log(upLoadList.value[0].raw.lastModifiedDate);
   for(let i=0;i<upLoadList.value.length;i++){
     let fileName=upLoadList.value[i].name;
     let fileSize=upLoadList.value[i].size;
     upLoadCollationList.value.push({
       folderName:folderName,
-      folderAuthor:folderAuthor,
+      teacherID:idcard,
+      folderAuthor:Name,
       fileName:fileName,
       fileSize:fileSize,
-      publication:false
+      createDate:datetime,
+      publication:0
     });
   }
-  request.post("/home/knowledgeList/upLoadFileList",{
-    upLoadCollationList:upLoadCollationList.value
+  //mock home/knowledgeList/upLoadFileList
+
+  request.post("/home/knowledgeList/upLoadOneFile",{
+    folderName:folderName,
+    teacherID:idcard,
+    folderAuthor:Name,
+    fileName:upLoadCollationList.value[0].fileName,
+    fileSize:1,
+    createDate:datetime,
+    publication:0
   }).then(res=>{
     for(let i=0;i<upLoadCollationList.value.length;i++){
       fileList.value.push({
         folderName:upLoadCollationList.value[i].folderName,
         folderAuthor:upLoadCollationList.value[i].folderAuthor,
         fileName:upLoadCollationList.value[i].fileName,
-        fileSize:upLoadCollationList.value[i].fileSize,
+        fileSize:1,
         publication:upLoadCollationList.value[i].publication
       });
     }
@@ -260,8 +281,11 @@ let submitUpLoadList=()=>{
 
 
 let roomList=ref();
+roomList.value=[];
 let roomListCheck=ref();
+roomListCheck.value=[];
 let classroomList=ref();
+classroomList.value=[];
 let dialogVisible=ref(false);
 let publicationItemIndex=0;
 let visible=ref(false);
@@ -269,8 +293,11 @@ const timeRange = ref([
   new Date(2000, 10, 10, 10, 10),
   new Date(2000, 10, 11, 10, 10),
 ])
+
 let submitPublication=(index)=>{
-  if(fileList.value[index].publication==false){
+  //默认学习和file两者一样名字
+  studyFileName.value=fileList.value[index].fileName;
+  if(fileList.value[index].publication==0){
     dialogVisible.value=true;
     visible.value=false;
   }
@@ -281,60 +308,110 @@ let submitPublication=(index)=>{
   publicationItemIndex=index;
 
 }
+
 let term=ref();
 let studyFileName=ref();
 let submitSelectClassroomAndPublication=()=>{
-  request.post("/home/knowledgeList/publicateToClassroom",{
-    folderName:folderName,
-    fileName:fileList.value[publicationItemIndex].fileName,
-    folderAuthor:folderAuthor,
-    acadmey:'computer',
-    term:term.value,
-    roomList:roomListCheck.value,
-    downLoadNumber:0,
-    dateStart:'2022-9-10',
-    dateEnd:'2022-9-15',
-    studyFileName:studyFileName.value
-  }).then(res=>{
-    console.log("res.data.publicationKnowledgeData");
-    console.log(res.data.publicationKnowledgeData);
-  }).catch(err=>{});
-  dialogVisible.value=false;
+  let idcard=getTokenID();
+  let Name=getTokenN();
+  let identity=getTokenIdentity();
+  let datetime = getDateTime();
+  console.log("选择完了");
+  console.log(roomListCheck);
 
-  request.post("/home/knowledgeList/publication",{
-    folderName:folderName,
-    folderAuthor:folderAuthor,
-    fileName:fileList.value[publicationItemIndex].fileName
-  }).then(res=>{
-    fileList.value[publicationItemIndex].publication=res.data.fileFilter[0].publication;;
-  }).catch(err=>{});
-
-}
-let handleSelectTermCommand=(command)=>{
-  term.value=command;
-  request.get("/home/knowledgeList/room",{
-    data:{
-      folderAuthor:folderAuthor,
-      acadmey:'computer',
-      term:term.value
-    }
-  }).then(res=>{
-    console.log(res.data);
-    roomList.value=res.data.teacherRoomData;
-
-  }).catch(err=>{});
-  request.get("/home/knowledgeList/publicateRoomList",{
-    data:{
+  roomListCheck.value.forEach(function (element){
+    //mock home/knowledgeList/publicateToClassroom
+    request.post("/home/knowledgeList/publicateToOneClassroom",{
+      teacherID:idcard,
+      studyFileName:studyFileName.value,
+      major:'大数据',
+      term:term.value,
+      room:element,
+      teacherName:Name,
+      acadmey:'计算机',
       folderName:folderName,
       fileName:fileList.value[publicationItemIndex].fileName,
-      folderAuthor:folderAuthor,
+      downLoadNumber:0,
+      dateStart:'2022-11-13 10:10:12',
+      dateEnd:'2022-11-17 10:10:12',
+
+    }).then(res=>{
+      if(res.data=="success"){
+        dialogVisible.value=true;
+        content.value="成功上传";
+        console.log("success add ");
+        //console.log(res.data.publicationKnowledgeData);
+      }
+      else if(res.data=="successNot"){
+        dialogVisible.value=true;
+        content.value="不要重复上传相同内容";
+        console.log("重复 add same ");
+      }
+      else
+        console.log("3 error 其他错误");
+
+
+
+  }).catch(err=>{});
+  });
+  dialogVisible.value=false;
+
+  // request.post("/home/knowledgeList/publication",{
+  //   folderName:folderName,
+  //   folderAuthor:folderAuthor,
+  //   fileName:fileList.value[publicationItemIndex].fileName
+  // }).then(res=>{
+  //   fileList.value[publicationItemIndex].publication=res.data.fileFilter[0].publication;;
+  // }).catch(err=>{});
+
+}
+
+let handleSelectTermCommand=(command)=>{
+  term.value=command;
+  let idcard=getTokenID();
+  getTokenN();
+  //mock /home/knowledgeList/room
+  request.get("/home/knowledgeList/oneTermRooms",{
+    params:{
+      idcard:idcard,
       acadmey:'computer',
       term:term.value
     }
   }).then(res=>{
-    console.log(res.data);
-    roomListCheck.value=res.data.publicationKnowledgeData;
+    if(res.data){
+      roomList.value=[];
+      res.data.forEach(function (element){
+        console.log(element);
+        roomList.value.push({
+          room:element.room,
+        });
+      });
+      //roomList.value=res.data.teacherRoomData;
+      console.log(roomList.value);
+    }
+  }).catch(err=>{});
 
+  let fileName=fileList.value[publicationItemIndex].fileName;
+  request.get("/home/knowledgeList/publicateRoomList",{
+    params:{
+      teacherID:idcard,
+      studyFileName:fileName,
+      major:'大数据',
+      term:term.value
+    }
+  }).then(res=>{
+    console.log("已经选择过了");
+    console.log(res.data);
+    if(res.data){
+      roomListCheck.value=[];
+      res.data.forEach(function (element){
+        console.log(element);
+        roomListCheck.value.push(element.room);
+      });
+      console.log("初始化的roomListCheck");
+      console.log(roomListCheck.value);
+      //roomListCheck.value=res.data.publicationKnowledgeData;
+    }
   }).catch(err=>{});
 
 }
@@ -344,10 +421,13 @@ let downLoad=(scope,index)=>{
   let folder=fileList.value[index];
   let folderAuthor=folder.folderAuthor;
   let fileName=folder.fileName;
-  request.get("/home/knowledgeList/downLoadFile",{
-    data:{
+  let teacherID=folder.teacherID;
+
+  //mock home/knowledgeList/downLoadFile
+  request.get("/home/knowledgeList/downOneFile",{
+    params:{
       folderName:folderName,
-      folderAuthor:folderAuthor,
+      idcard:teacherID,
       fileName:fileName
     }
   }).then(res=>{
@@ -411,33 +491,71 @@ let searchRules=reactive({
 });
 
 onMounted(() => {
+  //mock home/knowledgeList/knowledgeFileList
   //调用方法
+  let idcard=getTokenID();
   request
       .get("/home/knowledgeList/knowledgeFileList", {
-        data:{
+        params:{
           folderName: folderName,
-          folderAuthor: folderAuthor
+          idcard: teacherID
         }
       })
       .then(function(res) {
         if(res.data){
           console.log(res.data);
-          fileList.value=res.data.data;
+          res.data.forEach(function (element){
+            fileList.value.push({
+              folderName:element.folderName,
+              teacherID:element.teacherID,
+              folderAuthor:element.folderAuthor,
+              fileName:element.fileName,
+              fileSize:element.fileSize,
+              createDate:element.createDate,
+              publication:element.publication
+            });
+          });
+          //fileList.value=res.data.data;
           console.log('get informationFileList success');
         }
       })
       .catch(function(error) {
         console.log('get informationFileList error');
       });
+
   request.get("/home/knowledgeList/classroom",{
-    data:{
-      folderAuthor:folderAuthor,
-      acadmey:'computer'
+    params:{
+      idcard:idcard,
+      acadmey:'计算机'
     }
   }).then(function(res) {
     if(res.data){
-      console.log(res.data.teacherClassroomData);
-      classroomList.value=res.data.teacherClassroomData;
+      res.data.sort(function (a, b) {
+        return a.term-b.term;
+      });
+      //[0]
+      classroomList.value.push({
+        teacherID:res.data[0].teacherID,
+        teacherName:res.data[0].teacherName,
+        acadmey:res.data[0].acadmey,
+        major:res.data[0].major,
+        term:res.data[0].term,
+        room:res.data[0].room
+      });
+      //[1..n]
+      for (let i = 0; i < res.data.length-1; i++) {
+        if (res.data[i].term !== res.data[i+1].term) {
+          classroomList.value.push({
+            teacherID:res.data[i+1].teacherID,
+            teacherName:res.data[i+1].teacherName,
+            acadmey:res.data[i+1].acadmey,
+            major:res.data[i+1].major,
+            term:res.data[i+1].term,
+            room:res.data[i+1].room
+          });
+        }
+      }
+      //classroomList.value=res.data.teacherClassroomData;
       console.log('get classroom success');
     }
   }).catch(function(error) {

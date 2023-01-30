@@ -38,6 +38,7 @@
               <el-button
                   size="small"
                   type="danger"
+                  disabled
               >删除</el-button
               >
             </template>

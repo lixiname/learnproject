@@ -12,10 +12,12 @@ import knowledgeList from '../views/informationManagement/teacher/knowledge/know
 import knowledgeChild from '../views/informationManagement/teacher/knowledge/knowledgeChildList.vue'
 import knowledgeStudySituationList from '../views/informationManagement/teacher/studySituation/studySituationList.vue'
 import studySituationChildList from '../views/informationManagement/teacher/studySituation/studySituationChildList.vue'
+import  stdSituationList from "../views/informationManagement/student/stdSituationList.vue"
 import homeworkTime from '../views/homeworkManagement/student/homeworkTime.vue'
 import processHomework from '../views/homeworkManagement/student/processHomework.vue'
 import homeworkPublicate  from "../views/homeworkManagement/teacher/homeworkPublicate.vue";
 import  updateUserInformation from "../views/userManagement/updateUserInformation.vue"
+
 import  sharedBookList from "../views/userManagement/uploadBookList.vue"
 import home from '../views/homeTo.vue';
 const routes=[
@@ -83,6 +85,11 @@ const routes=[
                 path:'studySituationChild',
                 component:studySituationChildList,
                 name: 'studySituationChild'
+            },
+            {
+                path:'stdSituationList',
+                component:stdSituationList,
+                name: 'stdSituationList'
             },
 
 

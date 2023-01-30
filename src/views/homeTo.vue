@@ -51,12 +51,12 @@
                 <template #title>课程管理</template>
 <!--                <template #title>习题管理</template>-->
                 <el-menu-item-group class="menu-group">
-                  <div v-if="true==true">
-                    <el-menu-item index="2-1" route="/home/knowledgeSummary">资料上传/t/</el-menu-item>
-                    <el-menu-item index="2-2" route="/home/knowledgeStudySituation">班级学习情况/t/</el-menu-item>
+                  <div v-if="identity=='teacher'||identity=='super'">
+                    <el-menu-item index="2-1" route="/home/knowledgeSummary">资料上传</el-menu-item>
+                    <el-menu-item index="2-2" route="/home/knowledgeStudySituation">班级学习情况</el-menu-item>
                   </div>
-                  <div v-if="true==true">
-                    <el-menu-item index="2-3" route="/home/knowledgeSummary">资料学习/s/</el-menu-item>
+                  <div v-if="identity=='student'||identity=='super'">
+                    <el-menu-item index="2-3" route="/home/stdSituationList">资料学习</el-menu-item>
                   </div>
 
 <!--                  <el-menu-item index="2-1" route="/home/knowledgeSummary">习题查阅</el-menu-item>-->
@@ -80,9 +80,13 @@
                 <template #title>用户管理</template>
                 <!--                <template #title>案例管理</template>-->
                 <el-menu-item-group class="menu-group">
-                  <div v-if="identity=='teacher'||identity=='student'">
+                  <div v-if="identity=='teacher'||identity=='student'||identity=='super'">
                     <el-menu-item index="4-1" route="/home/updateUserInformation">修改信息</el-menu-item>
                     <el-menu-item index="4-2" route="/home/sharedBook">查看分享过的图书</el-menu-item>
+                  </div>
+                  <div v-if="identity=='management'||identity=='super'">
+                    <el-menu-item index="4-1" route="/home/updateUserInformation">老师清单</el-menu-item>
+                    <el-menu-item index="4-2" route="/home/sharedBook">学生清单</el-menu-item>
                   </div>
 
                 </el-menu-item-group>

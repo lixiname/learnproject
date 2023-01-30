@@ -12,8 +12,8 @@
       </el-table-column>
       <el-table-column label="学习进度">
         <template #default="scope" >
-          <el-progress :percentage="100"  v-if="scope.row.completed=='good'"/>
-          <el-progress :percentage="0" v-if="scope.row.completed=='bad'"/>
+          <el-progress :percentage="100"  v-if="scope.row.completed==1"/>
+          <el-progress :percentage="0" v-if="scope.row.completed==0"/>
         </template>
       </el-table-column>
       <el-table-column prop="completed"></el-table-column>
@@ -32,6 +32,7 @@ export default {
 import {ref, reactive, onMounted} from "vue";
 import { useRoute } from 'vue-router';
 import request from "../../../../http/request.js";
+import {getTokenID} from "../../../../utils/auth";
 let route=useRoute();
 let teacherName=route.query.teacherName;
 let acadmey=route.query.acadmey;
@@ -40,13 +41,13 @@ let room=route.query.room;
 let studyFileName=route.query.studyFileName;
 
 let roomStudentsFileStudySituationList=ref();
-
+roomStudentsFileStudySituationList.value=[];
 onMounted(() => {
   console.log(route.query);
+  let idcard=getTokenID();
   request.get("/home/knowledgeList/fileStudySituationList",{
-    data:{
-      teacherName:teacherName,
-      acadmey:acadmey,
+    params:{
+      idcard:idcard,
       term:term,
       room:room,
       studyFileName:studyFileName
@@ -54,7 +55,17 @@ onMounted(() => {
   }).then(function(res) {
     if(res.data){
       console.log(res.data);
-      roomStudentsFileStudySituationList.value=res.data.fileStudySituationList;
+      res.data.forEach(function (element){
+        console.log(element);
+        roomStudentsFileStudySituationList.value.push({
+          studentName:element.studentName,
+          studentID:element.studentID,
+          studyFileName:element.studyFileName,
+          completed:1
+        });
+      });
+
+      //roomStudentsFileStudySituationList.value=res.data.fileStudySituationList;
       console.log('get classroom success');
     }
   }).catch(function(error) {

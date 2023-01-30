@@ -1,4 +1,26 @@
 <template>
+  <el-dialog
+      title="提示"
+      v-model="dialogVisible"
+      width="30%">
+    <span>{{content}}了</span>
+    <span slot="footer" >
+        <el-button type="primary" @click="dialogVisible = false">确 定</el-button>
+      </span>
+  </el-dialog>
+  <el-dialog
+      title="输入文件名"
+      v-model="dialogVisibleCreateNewFolder"
+      width="30%">
+    <el-input v-model="newFolderName"  >
+      <template #prefix>
+        <el-icon color="rgb(244,192,70)"><Folder /></el-icon>
+      </template>
+    </el-input>
+    <span slot="footer" >
+        <el-button type="primary" @click="createNewFolder">确 定</el-button>
+      </span>
+  </el-dialog>
   <div style="height: 100%;">
     <el-row justify="space-between" align="top" >
       <el-col :span="8">
@@ -66,7 +88,7 @@
                              @confirm.stop="deleteFolder(scope,scope.$index)"
               >
                 <template #reference>
-                  <el-button :circle="true"  size="small" >
+                  <el-button :circle="true"  size="small" disabled>
                     <template #icon>
                       <el-icon color="red"><Delete /></el-icon>
                     </template>
@@ -105,26 +127,59 @@
 import {ref, reactive, onBeforeMount, onMounted} from 'vue';
 import { useRouter,useRoute } from 'vue-router';
 import request from '../../../../http/request.js';
+import {getDateTime, getTokenID, getTokenIdentity, getTokenN} from "../../../../utils/auth";
+
+
+
 console.log('first');
 let studyInformationList=ref();
+studyInformationList.value=[];
 
+let content=ref();
+let dialogVisible=ref(false);
+let newFolderName=ref("1test");
+let dialogVisibleCreateNewFolder=ref(false);
 let createFolder=()=>{
-  studyInformationList.value.push({
-    folderName: 'newDefault',
-    folderAuthor: 'lwx',
+  dialogVisibleCreateNewFolder.value=true;
+}
+let createNewFolder=()=>{
+  dialogVisibleCreateNewFolder.value=false;
+  //mock/home/knowledgeList/newFolder
+  let idcard=getTokenID();
+  let Name=getTokenN();
+  let datetime = getDateTime();
+  console.log({newFolderName:newFolderName})
+  request.post("/home/knowledgeList/upLoadOneFolder",{
+    folderName: newFolderName.value,
+    teacherID:idcard,
+    folderAuthor: Name,
     fileNumber:0,
-    createDate:'2022-12'
-  });
-  request.post("/home/knowledgeList/newFolder",{
-    folderName: 'newDefault',
-    folderAuthor: 'lwx',
-    fileNumber:0,
-    createDate:'2022-12'
+    createDate:datetime
   }).then(res=>{
-    console.log("createFolder success");
+    if(res.data=="success"){
+      dialogVisible.value=true;
+      content.value="成功创建文件夹";
+      console.log("success add folder");
+      studyInformationList.value.push({
+        folderName: newFolderName,
+        teacherID:idcard,
+        folderAuthor: Name,
+        fileNumber:0,
+        createDate:datetime
+      });
+    }
+    else if(res.data=="notSuccess"){
+      dialogVisible.value=true;
+      content.value="不要创建同名文件夹";
+      console.log("重复 add same folder");
+    }
+    else
+      console.log("3 error 其他错误");
 
   }).catch(error=>{console.log("createFolder error")});
 }
+
+
 
 let arrowUp=(scope,index, row)=>{
   let temp=studyInformationList.value[index-1];
@@ -139,13 +194,15 @@ let arrowDown=(scope,index, row)=>{
   console.log('up success');
 }
 let downLoad=(scope,index)=>{
+  let idcard=getTokenID();
   let folder=studyInformationList.value[index];
   let folderName=folder.folderName;
-  let folderAuthor=folder.folderAuthor;
-  request.get("/home/knowledgeList/downLoadList",{
-    data:{
+  let teacherID=folder.teacherID;
+  //mockhome/knowledgeList/downLoadList
+  request.get("/home/knowledgeList/downFiles",{
+    params:{
       folderName:folderName,
-      folderAuthor:folderAuthor
+      idcard:idcard
     }
   }).then(res=>{
     console.log("downLoad folder content success");
@@ -175,12 +232,12 @@ let deleteFolder=(scope,index)=>{
 let router=useRouter();
 let openChildList=(scope,index)=>{
   let folderNames=studyInformationList.value[index].folderName;
-  let folderAuthors=studyInformationList.value[index].folderAuthor;
+  let teacherID=studyInformationList.value[index].teacherID;
   console.log('open child success');
   router.push({path:'/home/knowledgeChild',
     query:{
       folderName:folderNames,
-      folderAuthor:folderAuthors
+      teacherID:teacherID
     }
   });
 }
@@ -229,19 +286,36 @@ let summaryDelete=()=>{
 let summaryDownLoad=()=>{
 
 }
+
+
 onMounted(() => {
   //调用方法
+  //mock /home/knowledgeList/folder
+
+  let idcard=getTokenID();
+  let Name=getTokenN();
+  let identity=getTokenIdentity();
+  let datetime = getDateTime();
   request
-      .get("/home/knowledgeList/folder", {
+      .get("/home/knowledgeList/folders", {
         params:{
-          user: "12345",
-          password: "12345",
+          idcard: idcard,
         }
       })
       .then(function(res) {
         if(res.data){
           console.log(res.data);
-          studyInformationList.value=res.data.knowledgeData;
+          res.data.forEach(function (element){
+            console.log(element);
+            studyInformationList.value.push({
+              folderName:element.folderName,
+              folderAuthor:element.folderAuthor,
+              fileNumber:element.fileNumber,
+              createDate:element.createDate,
+              teacherID:element.teacherID
+            });
+          });
+          //studyInformationList.value=res.data.knowledgeData;
           console.log(studyInformationList.value);
           console.log('get studyInformationList success');
         }
