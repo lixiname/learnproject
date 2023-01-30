@@ -225,7 +225,7 @@ let deleteFile=(scope,index)=>{
     fileList.value.splice(index,1);
   }).catch(function (error){
     console.log('delete file error')
-  })
+  });
 }
 let upLoadList=ref();
 let upLoadCollationList=ref();

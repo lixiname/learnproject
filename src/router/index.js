@@ -20,6 +20,12 @@ import  updateUserInformation from "../views/userManagement/updateUserInformatio
 import  stdAll from "../views/userManagement/stdAll.vue"
 import  teachAll from "../views/userManagement/teachAll.vue"
 
+import  doHomework from "../views/homeworkManagement/student/doHomework.vue";
+import  homeworkAll from "../views/homeworkManagement/student/homeworkAll.vue";
+import  addHomework from "../views/homeworkManagement/teacher/addHomework.vue";
+import  homeworkList from "../views/homeworkManagement/teacher/homeworkList.vue";
+import  stdHomeworkScore from "../views/homeworkManagement/teacher/stdHomeworkScore.vue";
+
 
 import  sharedBookList from "../views/userManagement/uploadBookList.vue"
 import home from '../views/homeTo.vue';
@@ -136,6 +142,33 @@ const routes=[
                 component:teachAll,
                 name: 'teachAll'
             },
+
+            {
+                path:'doHomework',
+                component:doHomework,
+                name: 'doHomework'
+            },
+            {
+                path:'shomeworkAll',
+                component:homeworkAll,
+                name: 'shomeworkAll'
+            },
+            {
+                path:'addHomework',
+                component:addHomework,
+                name: 'addHomework'
+            },
+            {
+                path:'thomeworkList',
+                component:homeworkList,
+                name: 'thomeworkList'
+            },
+            {
+                path:'stdHomeworkScore',
+                component:stdHomeworkScore,
+                name: 'stdHomeworkScore'
+            },
+
         ]
     },
 ];

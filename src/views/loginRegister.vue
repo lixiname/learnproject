@@ -7,7 +7,7 @@
             label-width="70px"
             style="max-width: 500px"
             :model="form"
-            :rules="formRule"
+
         >
           <el-form-item label="工号：" prop="idCard">
             <el-input v-model="form.idCard" placeholder="11位" >
@@ -39,14 +39,14 @@
                   v-model="isAgree"
                   name="type"
               >
-                同意用户使用准则content
+                同意用户使用准则
               </el-checkbox>
           </el-form-item>
           <el-form-item>
             <el-collapse v-model="array">
               <el-collapse-item name="1" title="详情">
                 <el-scrollbar height="100px">
-                  同意用户使用准则content
+                  用户使用准则具体内容
                 </el-scrollbar>
 
               </el-collapse-item>
@@ -70,43 +70,57 @@
             style="max-width: 460px"
             class="loginForm"
         >
-          <el-form-item label="邮箱：">
-            <el-input v-model="rEmail" placeholder="xxx@xxx.com">
+          <el-form-item label="ID：">
+            <el-input v-model="idx" placeholder="140203">
+              <template #prefix>
+                <el-icon><User /></el-icon>
+              </template>
+            </el-input>
+          </el-form-item>
+          <el-form-item label="姓名：">
+            <el-input v-model="namedsx" placeholder="hong">
+              <template #prefix>
+                <el-icon><User /></el-icon>
+              </template>
+            </el-input>
+          </el-form-item>
+          <el-form-item label="电话：">
+            <el-input v-model="phoness" placeholder="135...">
               <template #prefix>
                 <el-icon><User /></el-icon>
               </template>
             </el-input>
           </el-form-item>
           <el-form-item label="密码：">
-            <el-input type="password" placeholder="至少8位" show-password v-model="rPassword" >
+            <el-input type="password" placeholder="至少8位"  v-model="passwordfirst">
               <template #prefix>
                 <el-icon><Lock /></el-icon>
               </template>
             </el-input>
           </el-form-item>
           <el-form-item label="确认密码：">
-            <el-input type="password"  show-password v-model="confirmPassword" >
+            <el-input type="password"  v-model="passwordagain">
               <template #prefix>
                 <el-icon><Lock /></el-icon>
               </template>
             </el-input>
           </el-form-item>
-          <el-form-item label="验证码：">
-            <el-row >
-              <el-col span="1">
-                <el-input
-                    type="password"
-                    v-model="identifyCode"
-                    class="inpWidth"
-                />
-              </el-col>
-              <el-col span="4">
-                <el-button type="primary" @click="getIdentifyCode" plain>
-                  获取验证码
-                </el-button>
-              </el-col>
-            </el-row>
-          </el-form-item>
+<!--          <el-form-item label="验证码：">-->
+<!--            <el-row >-->
+<!--              <el-col span="1">-->
+<!--                <el-input-->
+<!--                    type="password"-->
+<!--                    v-model="identifyCode"-->
+<!--                    class="inpWidth"-->
+<!--                />-->
+<!--              </el-col>-->
+<!--              <el-col span="4">-->
+<!--                <el-button type="primary" @click="getIdentifyCode" plain>-->
+<!--                  获取验证码-->
+<!--                </el-button>-->
+<!--              </el-col>-->
+<!--            </el-row>-->
+<!--          </el-form-item>-->
 
           <el-form-item>
             <el-checkbox
@@ -130,8 +144,7 @@
           <el-button
               v-if="isAgree"
               type="primary"
-              class="loginBtn"
-              @click="register"
+              @click="registersx"
           >
             注册
           </el-button>
@@ -306,7 +319,34 @@ let radioChange=()=>{
     form.idCard='00000001'; form.password='12345678';
   }
 }
+let idx=ref();
+let namedsx=ref();
+let passwordfirst=ref();
+let passwordagain=ref();
+let phoness=ref();
+let registersx=()=>{
+  console.log(idx);
+  request.get("/home/user/addmanage",{
+    params:{
+      id:idx.value,
+      name:namedsx.value,
+      phone:phoness.value,
+      password:passwordfirst.value,
+    }
+  }).then(function(res) {
+    if(res.data){
+      if(res.data=='1'){
+        content.value='注册成功';
+      }
+      else if(res.data=='2'){
+        content.value='重复注册';
+      }
+    }
+  }).catch(function(error) {
+    console.log('get  error');
+  });
 
+}
 onMounted(() => {
   document.cookie='user=xw';
 });

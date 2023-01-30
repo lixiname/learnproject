@@ -1,66 +1,35 @@
 <template>
-  <div>
-    <el-row justify="center" align="middle">
-      <el-col :span="12">
-        <el-timeline>
-          <el-timeline-item
-              v-for="(object,index) in lists"
-              :timestamp="object.end"  placement="top"
-              :key="index"
-          >
-            <el-card shadow="hover">
-              <el-row justify="space-between" align="middle">
-                <el-col :span="21">
-                  <h4>{{object.fileName}}</h4>
-                  <el-descriptions>
-                    <el-descriptions-item label="截止时间">
-                      {{object.end}}
-                    </el-descriptions-item>
-                  </el-descriptions>
-                </el-col>
-                <el-col :span="3">
-                  <el-button size="small" :plain="true" type="info">详情</el-button>
-                </el-col>
-              </el-row>
-              <el-row justify="center">
-                <el-col :span="20">
-                  <el-button size="small" :plain="true" type="primary" style="width: 100%"
-                             @click="dohomework(index)">去完成</el-button>
-                </el-col>
-              </el-row>
-
-            </el-card>
-          </el-timeline-item>
-
-        </el-timeline>
-      </el-col>
-    </el-row>
-
-  </div>
-
+  <el-table :data="lists" border="true"  size="small" style="height: 95%;">
+    <el-table-column label="试卷名" sortable>
+      <template #default="scope">
+        <el-icon color="rgb(244,192,70)"><Notebook /></el-icon>
+        <span>{{scope.row.fileName}}</span>
+      </template>
+    </el-table-column>
+    <el-table-column label="班级" prop="room" sortable>
+    </el-table-column>
+    <el-table-column label="老师" prop="tname" sortable>
+    </el-table-column>
+    <el-table-column label="课件学习时间段"  >
+      <el-table-column label="开始时间"  prop="start"></el-table-column>
+      <el-table-column label="截止时间"  prop="end"></el-table-column>
+    </el-table-column>
+    <el-table-column>
+      <template #default="scope" >
+        <el-button
+            size="small"
+            plain
+            @click="dohomework(scope.$index)"
+        >做题</el-button
+        >
+      </template>
+    </el-table-column >
+  </el-table>
 </template>
 
 <script>
 export default {
-  name: "homeworkTime",
-  data(){
-    return{
-      homeworkTimeArray:[
-        {
-          content:'数学',
-          time:'2022-10-14'
-        },
-        {
-          content:'英语',
-          time:'2022-10-13'
-        },
-        {
-          content:'java',
-          time:'2022-10-11'
-        }
-      ]
-    }
-  }
+  name: "homeworkAll"
 }
 </script>
 <script setup>

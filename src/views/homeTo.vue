@@ -73,10 +73,16 @@
                   <template #title>作业管理</template>
                   <!--                <template #title>案例管理</template>-->
                   <el-menu-item-group class="menu-group">
-                    <el-menu-item index="3-1" route="/home/homeworkRequest">作业要求</el-menu-item>
-                    <el-menu-item index="3-2" route="/home/processHomework">作业上传</el-menu-item>
-                    <el-menu-item index="3-3" route="/home/homeworkScore">作业成绩</el-menu-item>
-                    <el-menu-item index="3-4" route="/home/homeworkTime">作业提交截止时间</el-menu-item>
+                    <div v-if="identity=='student'||identity=='super'">
+<!--                      <el-menu-item index="3-1" route="/home/doHomework">做作业</el-menu-item>-->
+                      <el-menu-item index="3-2" route="/home/shomeworkAll">作业清单</el-menu-item>
+                      <el-menu-item index="3-3" route="/home/homeworkTime">作业提交截止时间</el-menu-item>
+                    </div>
+                    <div v-if="identity=='teacher'||identity=='super'">
+                      <el-menu-item index="3-4" route="/home/addHomework">出题</el-menu-item>
+                      <el-menu-item index="3-5" route="/home/thomeworkList">全部作业</el-menu-item>
+                      <el-menu-item index="3-6" route="/home/stdHomeworkScore">作业成绩</el-menu-item>
+                    </div>
                     <!--                  <el-menu-item index="3-1" route="/home/homeworkRequest">案例查阅</el-menu-item>-->
                     <!--                  <el-menu-item index="3-2" route="/home/processHomework">案例上传</el-menu-item>-->
                   </el-menu-item-group>
