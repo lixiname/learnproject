@@ -47,35 +47,42 @@
 <!--                  <el-menu-item index="1-2" route="/home/bookAudit" >函数图像上传</el-menu-item>-->
                 </el-menu-item-group>
               </el-sub-menu>
-              <el-sub-menu index="2" >
-                <template #title>课程管理</template>
-<!--                <template #title>习题管理</template>-->
-                <el-menu-item-group class="menu-group">
-                  <div v-if="identity=='teacher'||identity=='super'">
-                    <el-menu-item index="2-1" route="/home/knowledgeSummary">资料上传</el-menu-item>
-                    <el-menu-item index="2-2" route="/home/knowledgeStudySituation">班级学习情况</el-menu-item>
-                  </div>
-                  <div v-if="identity=='student'||identity=='super'">
-                    <el-menu-item index="2-3" route="/home/stdSituationList">资料学习</el-menu-item>
-                  </div>
+              <div v-if="identity=='teacher'||identity=='student'">
+                <el-sub-menu index="2" >
+                  <template #title>课程管理</template>
+                  <!--                <template #title>习题管理</template>-->
 
-<!--                  <el-menu-item index="2-1" route="/home/knowledgeSummary">习题查阅</el-menu-item>-->
-<!--                  <el-menu-item index="2-2" route="/home/homeworkPublicate">习题上传</el-menu-item>-->
-<!--                  <el-menu-item index="2-3" route="/home/knowledgeStudySituation">用户练习情况</el-menu-item>-->
-                </el-menu-item-group>
-              </el-sub-menu>
-              <el-sub-menu index="3" >
-                <template #title>作业管理</template>
-<!--                <template #title>案例管理</template>-->
-                <el-menu-item-group class="menu-group">
-                  <el-menu-item index="3-1" route="/home/homeworkRequest">作业要求</el-menu-item>
-                  <el-menu-item index="3-2" route="/home/processHomework">作业上传</el-menu-item>
-                  <el-menu-item index="3-3" route="/home/homeworkScore">作业成绩</el-menu-item>
-                  <el-menu-item index="3-4" route="/home/homeworkTime">作业提交截止时间</el-menu-item>
-<!--                  <el-menu-item index="3-1" route="/home/homeworkRequest">案例查阅</el-menu-item>-->
-<!--                  <el-menu-item index="3-2" route="/home/processHomework">案例上传</el-menu-item>-->
-                </el-menu-item-group>
-              </el-sub-menu>
+                  <el-menu-item-group class="menu-group">
+                    <div v-if="identity=='teacher'||identity=='super'">
+                      <el-menu-item index="2-1" route="/home/knowledgeSummary">资料上传</el-menu-item>
+                      <el-menu-item index="2-2" route="/home/knowledgeStudySituation">班级学习情况</el-menu-item>
+                    </div>
+                    <div v-if="identity=='student'||identity=='super'">
+                      <el-menu-item index="2-3" route="/home/stdSituationList">资料学习</el-menu-item>
+                    </div>
+
+                    <!--                  <el-menu-item index="2-1" route="/home/knowledgeSummary">习题查阅</el-menu-item>-->
+                    <!--                  <el-menu-item index="2-2" route="/home/homeworkPublicate">习题上传</el-menu-item>-->
+                    <!--                  <el-menu-item index="2-3" route="/home/knowledgeStudySituation">用户练习情况</el-menu-item>-->
+                  </el-menu-item-group>
+                </el-sub-menu>
+              </div>
+
+              <div v-if="identity=='teacher'||identity=='student'">
+                <el-sub-menu index="3" >
+                  <template #title>作业管理</template>
+                  <!--                <template #title>案例管理</template>-->
+                  <el-menu-item-group class="menu-group">
+                    <el-menu-item index="3-1" route="/home/homeworkRequest">作业要求</el-menu-item>
+                    <el-menu-item index="3-2" route="/home/processHomework">作业上传</el-menu-item>
+                    <el-menu-item index="3-3" route="/home/homeworkScore">作业成绩</el-menu-item>
+                    <el-menu-item index="3-4" route="/home/homeworkTime">作业提交截止时间</el-menu-item>
+                    <!--                  <el-menu-item index="3-1" route="/home/homeworkRequest">案例查阅</el-menu-item>-->
+                    <!--                  <el-menu-item index="3-2" route="/home/processHomework">案例上传</el-menu-item>-->
+                  </el-menu-item-group>
+                </el-sub-menu>
+              </div>
+
               <el-sub-menu index="4" >
                 <template #title>用户管理</template>
                 <!--                <template #title>案例管理</template>-->
@@ -85,8 +92,8 @@
                     <el-menu-item index="4-2" route="/home/sharedBook">查看分享过的图书</el-menu-item>
                   </div>
                   <div v-if="identity=='management'||identity=='super'">
-                    <el-menu-item index="4-1" route="/home/updateUserInformation">老师清单</el-menu-item>
-                    <el-menu-item index="4-2" route="/home/sharedBook">学生清单</el-menu-item>
+                    <el-menu-item index="4-1" route="/home/teachAll">老师清单</el-menu-item>
+                    <el-menu-item index="4-2" route="/home/stdAll">学生清单</el-menu-item>
                   </div>
 
                 </el-menu-item-group>

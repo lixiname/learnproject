@@ -16,7 +16,10 @@ import  stdSituationList from "../views/informationManagement/student/stdSituati
 import homeworkTime from '../views/homeworkManagement/student/homeworkTime.vue'
 import processHomework from '../views/homeworkManagement/student/processHomework.vue'
 import homeworkPublicate  from "../views/homeworkManagement/teacher/homeworkPublicate.vue";
-import  updateUserInformation from "../views/userManagement/updateUserInformation.vue"
+import  updateUserInformation from "../views/userManagement/updateUserInformation.vue";
+import  stdAll from "../views/userManagement/stdAll.vue"
+import  teachAll from "../views/userManagement/teachAll.vue"
+
 
 import  sharedBookList from "../views/userManagement/uploadBookList.vue"
 import home from '../views/homeTo.vue';
@@ -123,7 +126,16 @@ const routes=[
                 component:sharedBookList,
                 name: 'sharedBook'
             },
-
+            {
+                path:'stdAll',
+                component:stdAll,
+                name: 'stdAll'
+            },
+            {
+                path:'teachAll',
+                component:teachAll,
+                name: 'teachAll'
+            },
         ]
     },
 ];
