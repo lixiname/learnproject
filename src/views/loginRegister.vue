@@ -154,6 +154,7 @@
   </div>
 </template>
 
+
 <script>
 export default {
   name: "loginRegister",
@@ -219,6 +220,7 @@ let formRule=reactive({
   ]
 });
 let login=function (){
+
 
   console.log(form.radioIdentity);
   let identity=form.radioIdentity;

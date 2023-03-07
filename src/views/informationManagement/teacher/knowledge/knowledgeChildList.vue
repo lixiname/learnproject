@@ -151,6 +151,7 @@
         <el-upload
             :auto-upload="false"
             v-model:file-list="upLoadList"
+            :limit="1"
             style="width: 100%;">
           <template #trigger>
             <el-row justify="center" style="width: 100%;">
@@ -228,6 +229,7 @@ let deleteFile=(scope,index)=>{
   });
 }
 let upLoadList=ref();
+upLoadList.value=[];
 let upLoadCollationList=ref();
 upLoadCollationList.value=[];
 let submitUpLoadList=()=>{
@@ -236,8 +238,8 @@ let submitUpLoadList=()=>{
   let Name=getTokenN();
   let identity=getTokenIdentity();
   let datetime = getDateTime();
-
-  console.log(upLoadList.value[0].raw.lastModifiedDate);
+  console.log('uploadlist:');
+  console.log(upLoadList.value);
   for(let i=0;i<upLoadList.value.length;i++){
     let fileName=upLoadList.value[i].name;
     let fileSize=upLoadList.value[i].size;
@@ -252,7 +254,7 @@ let submitUpLoadList=()=>{
     });
   }
   //mock home/knowledgeList/upLoadFileList
-
+  console.log("repeat upload file list");
   request.post("/home/knowledgeList/upLoadOneFile",{
     folderName:folderName,
     teacherID:idcard,
@@ -262,21 +264,29 @@ let submitUpLoadList=()=>{
     createDate:datetime,
     publication:0
   }).then(res=>{
-    for(let i=0;i<upLoadCollationList.value.length;i++){
-      fileList.value.push({
-        folderName:upLoadCollationList.value[i].folderName,
-        folderAuthor:upLoadCollationList.value[i].folderAuthor,
-        fileName:upLoadCollationList.value[i].fileName,
-        fileSize:1,
-        publication:upLoadCollationList.value[i].publication
-      });
+    if(res.data=='success'){
+      console.log("success upload file list");
+      for(let i=0;i<upLoadCollationList.value.length;i++){
+        fileList.value.push({
+          folderName:upLoadCollationList.value[i].folderName,
+          folderAuthor:upLoadCollationList.value[i].folderAuthor,
+          fileName:upLoadCollationList.value[i].fileName,
+          fileSize:1,
+          publication:upLoadCollationList.value[i].publication
+        });
+      }
+    }
+    else if(res.data=='notSuccess'){
+      console.log("repeat upload file list");
     }
     let oldLength=upLoadCollationList.value.length;
     upLoadCollationList.value.splice(0,oldLength);
-    console.log("success upload file list");
+    upLoadList.value.splice(0,oldLength);
+    console.log(upLoadCollationList.value);
+    console.log(res.data);
 
   }).catch(err=>{});
-  console.log(upLoadCollationList.value);
+  console.log("failed upload file list");
 }
 
 

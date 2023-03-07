@@ -56,3 +56,9 @@ export function getDateTime(){
     let datetime = year + '-' + month + '-' + day + ' ' + Hours + ':' + Minutes + ':' + Seconds;
     return datetime;
 }
+export function getDay(day){
+    let strList=day.split(" ");
+    let strLists=strList[0].split("-");
+    let dayInt=strLists[2];
+    return dayInt;
+}

@@ -87,12 +87,14 @@
               <template #label>
                 <div>
                   <el-icon><Folder /></el-icon>
-                  PDF文件
+                  书籍封面
                 </div>
               </template>
               <el-upload
                   :auto-upload="false"
                   v-model:file-list="upLoadList"
+                  :limit="1"
+                  :on-exceed="handleExceed"
                   style="width: 100%;">
                 <template #trigger>
                   <el-row justify="center" style="width: 100%;">
@@ -103,6 +105,11 @@
                       添加文件 <em style="color:rgb(72,175,217)">请点击这里</em>
                     </el-col>
                   </el-row>
+                </template>
+                <template #tip>
+                  <div class="el-upload__tip">
+                    只能选一张图片作为封面上传
+                  </div>
                 </template>
               </el-upload>
             </el-descriptions-item>
@@ -137,7 +144,8 @@ let authorNew=ref();
 let bookTypeNew=ref();
 let ISBNnew=ref();
 let publisherNew=ref();
-
+let upLoadList=ref();
+upLoadList.value=[];
 let content=ref();
 let dialogVisible=ref(false);
 let upLoadBook=()=>{
@@ -147,6 +155,8 @@ let upLoadBook=()=>{
   let identity=getTokenIdentity();
   let datetime = getDateTime();
   console.log(datetime);
+  console.log(upLoadList.value[0].raw);
+
   request.post("/home/book/addAccessBook",{
       bookName:bookNameNew.value,
       author:authorNew.value,
@@ -156,7 +166,8 @@ let upLoadBook=()=>{
       idCard:idcard,
       name:Name,
       identity:identity,
-      datetime:datetime
+      datetime:datetime,
+      pictureOppositePath:upLoadList.value[0].name,
   }).then(function (res){
     //1成功，2重复，3其他错误
     if(res.data=="1"){

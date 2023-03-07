@@ -8,6 +8,11 @@
           </div>
         </template>
         <div>
+          <el-row justify="center">
+            <el-col :span="9">
+              <el-image :src="URLs" fit="contain"></el-image>
+            </el-col>
+          </el-row>
           <el-descriptions :border="true" :column="1">
             <el-descriptions-item >
               <template #label>
@@ -109,7 +114,7 @@ let authorNew=ref();
 let bookTypeNew=ref();
 let ISBNnew=ref();
 let publisherNew=ref();
-
+let URLs=ref("");
 
 let updateBook=()=>{
   //truth http
@@ -156,6 +161,24 @@ onMounted(() => {
     }
   }).catch(function(error) {
     console.log('get book error');
+  });
+
+  request.get("/home/book/image",{
+    params:{
+      bookName:bookNamed,
+      publicateUserNameID:publicateUserNameIDd,
+      type:flage
+    },
+    responseType: 'blob',
+  }).then(res=>{
+    console.log(res.data);
+    console.log(" book picture  success");
+    let blob = new Blob([res.data]);
+    let url = URL.createObjectURL(blob);
+    console.log('blob url:     '+url);
+    URLs.value = url;
+  }).catch(error=>{
+    console.log("book picture error");
   });
 });
 </script>

@@ -61,6 +61,16 @@
           </el-button>
         </template>
       </el-table-column>
+      <el-table-column >
+        <template #default="scope">
+          <el-button
+              size="small"
+              type="success"
+              @click="studyEchart(scope.$index)">
+            折线图
+          </el-button>
+        </template>
+      </el-table-column>
 
     </el-table>
 
@@ -159,6 +169,30 @@ let handleSelectRoomCommand=(command)=>{
 }
 
 let router=useRouter();
+
+
+let studyEchart=(index)=>{
+  let teacherName=fileList.value[index].teacherName;
+  let acadmey=fileList.value[index].acadmey;
+  let term=fileList.value[index].term;
+  let room=fileList.value[index].room;
+  let studyFileName=fileList.value[index].studyFileName;
+  let dateStart=fileList.value[index].dateStart;
+  let dateEnd=fileList.value[index].dateEnd;
+  console.log('open echart success');
+  router.push({path:'/home/stdSituationChart',
+    query:{
+      teacherName:teacherName,
+      acadmey:acadmey,
+      term:term,
+      room:room,
+      studyFileName:studyFileName,
+      dateStart:dateStart,
+      dateEnd:dateEnd,
+    }
+  });
+}
+
 let studyDetailed=(index)=>{
   let teacherName=fileList.value[index].teacherName;
   let acadmey=fileList.value[index].acadmey;

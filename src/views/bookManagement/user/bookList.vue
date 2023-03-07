@@ -60,6 +60,7 @@
               @click="bookAgreed(scope,scope.$index, scope.row)"
           >赞了</el-button
           >
+          {{k}}
         </template>
       </el-table-column >
     </el-table>
@@ -174,12 +175,6 @@ let bookAgreed=(scope,index)=>{
 
 
 
-
-
-
-
-
-
 onMounted(() => {
   request.get("/home/book/AllBooksList",{
     data:{
@@ -188,6 +183,7 @@ onMounted(() => {
   }).then(function(res) {
     if(res.data){
       console.log(res);
+
       //mock
       // res.data.bookList.forEach(function (element){
       //   bookArray.value.push({

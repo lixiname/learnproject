@@ -3,7 +3,13 @@
     <el-container style="background-color:rgb(231,221,203); height: 100%;">
       <el-header style="height: 5%;" class="header-layout">
         <el-row justify="space-between" align="middle" style="height: 100%;">
-          <el-col :span="21" >
+          <el-col :span="3">
+            <el-radio-group v-model="isCollapse"  >
+              <el-radio-button :label="false">展开</el-radio-button>
+              <el-radio-button :label="true">隐藏</el-radio-button>
+            </el-radio-group>
+          </el-col>
+          <el-col :span="16" >
             管理系统
           </el-col>
           <el-col :span="2" >
@@ -28,9 +34,26 @@
                      :router="true"  default-active="1"  background-color="rgb(50,65,86)"
                      text-color="rgb(244,244,245)"
                      active-text-color="rgb(81,158,253)"
+                     :collapse="isCollapse"
                      style="height: 100%;">
+
+              <el-sub-menu index="5" >
+                <template #title>首页</template>
+                <!--                <template #title>函数图像管理</template>-->
+                <el-menu-item-group class="menu-group">
+                  <div v-if="identity=='management'||identity=='super'">
+                    <el-menu-item index="5-1" route="/home/schoolNewStd" >校内资讯</el-menu-item>
+                  </div>
+                  <div v-if="identity=='teacher'||identity=='student'||identity=='super'">
+                    <el-menu-item index="5-2" route="/home/schoolNewStd" >校内资讯</el-menu-item>
+                  </div>
+                </el-menu-item-group>
+              </el-sub-menu>
+
               <el-sub-menu index="1" >
-                <template #title>书籍管理</template>
+                <template #title><el-icon><Reading /></el-icon>
+                  <span>书籍管理</span>
+                </template>
 <!--                <template #title>函数图像管理</template>-->
                 <el-menu-item-group class="menu-group">
                   <div v-if="identity=='management'||identity=='super'">
@@ -47,50 +70,57 @@
 <!--                  <el-menu-item index="1-2" route="/home/bookAudit" >函数图像上传</el-menu-item>-->
                 </el-menu-item-group>
               </el-sub-menu>
-              <div v-if="identity=='teacher'||identity=='student'">
-                <el-sub-menu index="2" >
-                  <template #title>课程管理</template>
-                  <!--                <template #title>习题管理</template>-->
 
-                  <el-menu-item-group class="menu-group">
-                    <div v-if="identity=='teacher'||identity=='super'">
-                      <el-menu-item index="2-1" route="/home/knowledgeSummary">资料上传</el-menu-item>
-                      <el-menu-item index="2-2" route="/home/knowledgeStudySituation">班级学习情况</el-menu-item>
-                    </div>
-                    <div v-if="identity=='student'||identity=='super'">
-                      <el-menu-item index="2-3" route="/home/stdSituationList">资料学习</el-menu-item>
-                    </div>
+              <el-sub-menu index="2" v-if="identity=='teacher'||identity=='student'">
+                <template #title>
+                  <el-icon><School /></el-icon>
+                  <span>课程管理</span>
+                </template>
+                <!--                <template #title>习题管理</template>-->
 
-                    <!--                  <el-menu-item index="2-1" route="/home/knowledgeSummary">习题查阅</el-menu-item>-->
-                    <!--                  <el-menu-item index="2-2" route="/home/homeworkPublicate">习题上传</el-menu-item>-->
-                    <!--                  <el-menu-item index="2-3" route="/home/knowledgeStudySituation">用户练习情况</el-menu-item>-->
-                  </el-menu-item-group>
-                </el-sub-menu>
-              </div>
+                <el-menu-item-group class="menu-group">
+                  <div v-if="identity=='teacher'||identity=='super'">
+                    <el-menu-item index="2-1" route="/home/knowledgeSummary">资料上传</el-menu-item>
+                    <el-menu-item index="2-2" route="/home/knowledgeStudySituation">班级学习情况</el-menu-item>
+<!--                    <el-menu-item index="2-3" route="/home/stdSituationChart">学习情况图表</el-menu-item>-->
 
-              <div v-if="identity=='teacher'||identity=='student'">
-                <el-sub-menu index="3" >
-                  <template #title>作业管理</template>
-                  <!--                <template #title>案例管理</template>-->
-                  <el-menu-item-group class="menu-group">
-                    <div v-if="identity=='student'||identity=='super'">
-<!--                      <el-menu-item index="3-1" route="/home/doHomework">做作业</el-menu-item>-->
-                      <el-menu-item index="3-2" route="/home/shomeworkAll">作业清单</el-menu-item>
-                      <el-menu-item index="3-3" route="/home/homeworkTime">作业提交截止时间</el-menu-item>
-                    </div>
-                    <div v-if="identity=='teacher'||identity=='super'">
-                      <el-menu-item index="3-4" route="/home/addHomework">出题</el-menu-item>
-                      <el-menu-item index="3-5" route="/home/thomeworkList">全部作业</el-menu-item>
-                      <el-menu-item index="3-6" route="/home/stdHomeworkScore">作业成绩</el-menu-item>
-                    </div>
+                  </div>
+                  <div v-if="identity=='student'||identity=='super'">
+                    <el-menu-item index="2-3" route="/home/stdSituationList">资料学习</el-menu-item>
+                  </div>
+                  <!--                  <el-menu-item index="2-1" route="/home/knowledgeSummary">习题查阅</el-menu-item>-->
+                  <!--                  <el-menu-item index="2-2" route="/home/homeworkPublicate">习题上传</el-menu-item>-->
+                  <!--                  <el-menu-item index="2-3" route="/home/knowledgeStudySituation">用户练习情况</el-menu-item>-->
+                </el-menu-item-group>
+              </el-sub-menu>
+
+              <el-sub-menu index="3" v-if="identity=='teacher'||identity=='student'">
+                <template #title>
+                  <el-icon><Memo /></el-icon>
+                  <span>作业管理</span>
+                </template>
+                <!--                <template #title>案例管理</template>-->
+                <el-menu-item-group class="menu-group">
+                  <div v-if="identity=='student'||identity=='super'">
+<!--                   <el-menu-item index="3-1" route="/home/doHomework">做作业</el-menu-item>-->
+                    <el-menu-item index="3-2" route="/home/shomeworkAll">作业清单</el-menu-item>
+                    <el-menu-item index="3-3" route="/home/homeworkTime">作业提交截止时间</el-menu-item>
+                  </div>
+                  <div v-if="identity=='teacher'||identity=='super'">
+                    <el-menu-item index="3-4" route="/home/addHomework">出题</el-menu-item>
+                    <el-menu-item index="3-5" route="/home/thomeworkList">全部作业</el-menu-item>
+                    <el-menu-item index="3-6" route="/home/stdHomeworkScore">作业成绩</el-menu-item>
+                  </div>
                     <!--                  <el-menu-item index="3-1" route="/home/homeworkRequest">案例查阅</el-menu-item>-->
                     <!--                  <el-menu-item index="3-2" route="/home/processHomework">案例上传</el-menu-item>-->
-                  </el-menu-item-group>
-                </el-sub-menu>
-              </div>
+                </el-menu-item-group>
+              </el-sub-menu>
 
               <el-sub-menu index="4" >
-                <template #title>用户管理</template>
+                <template #title>
+                  <el-icon><UserFilled /></el-icon>
+                  <span>用户管理</span>
+                </template>
                 <!--                <template #title>案例管理</template>-->
                 <el-menu-item-group class="menu-group">
                   <div v-if="identity=='teacher'||identity=='student'||identity=='super'">
@@ -104,6 +134,7 @@
 
                 </el-menu-item-group>
               </el-sub-menu>
+
             </el-menu>
 
           </div>
@@ -156,7 +187,7 @@ else if(identity.value=="management"){
 else if(identity.value=="super"){
   identityStatus.value="开发者";
 }
-
+let isCollapse = ref(false);
 let quit=()=>{
   removeTokens();
   router.push({path:'/'});
