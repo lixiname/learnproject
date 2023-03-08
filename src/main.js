@@ -39,7 +39,7 @@ for (const [key, component] of Object.entries(ElementPlusIconsVue)) {
 }
 
 // 全局注册组件（也可以使用局部注册）
-app.component('v-chart', uses);
+//app.component('v-chart', uses);
 
 //app.config.globalProperties.$http=axios;
 app.use(ElementPlus);
