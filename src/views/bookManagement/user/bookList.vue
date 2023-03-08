@@ -95,6 +95,7 @@ import {ref, reactive, onMounted} from "vue";
 import { useRouter } from 'vue-router';
 import request from "../../../http/request.js";
 import {getTokenID, getTokenIdentity, getTokenN,getDateTime} from '../../../utils/auth.js'
+import download from 'downloadjs'
 let router=useRouter();
 let bookArray=ref();
 bookArray.value=[];
@@ -119,10 +120,16 @@ let downLoad=(scope,index)=>{
     params:{
       bookName:bookName,
       publicateUserNameID:publicateUserNameID
-    }
+    },
+    responseType: 'blob',
   }).then(res=>{
-    console.log("downLoad book content success");
     console.log(res.data);
+    console.log(" downLoad book content success");
+    let blob = new Blob([res.data]);
+    let url =URL.createObjectURL(blob);
+    //window.open(url);
+    download(blob,'1.pdf','application/pdf');
+    console.log('blob url:     '+url);
   }).catch(error=>{
     console.log("downLoad book content error");
   });

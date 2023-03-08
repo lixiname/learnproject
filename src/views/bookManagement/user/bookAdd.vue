@@ -112,6 +112,28 @@
                   </div>
                 </template>
               </el-upload>
+              <el-upload
+                  :auto-upload="false"
+                  v-model:file-list="upLoadPDFList"
+                  :limit="1"
+                  :on-exceed="handleExceed"
+                  style="width: 100%;">
+                <template #trigger>
+                  <el-row justify="center" style="width: 100%;">
+                    <el-col :span="24">
+                      <el-icon size="15px"><upload-filled /></el-icon>
+                    </el-col>
+                    <el-col :span="24">
+                      添加文件 <em style="color:rgb(72,175,217)">请点击这里</em>
+                    </el-col>
+                  </el-row>
+                </template>
+                <template #tip>
+                  <div class="el-upload__tip">
+                    只能选一份PDF上传
+                  </div>
+                </template>
+              </el-upload>
             </el-descriptions-item>
           </el-descriptions>
         </div>
@@ -146,8 +168,12 @@ let ISBNnew=ref();
 let publisherNew=ref();
 let upLoadList=ref();
 upLoadList.value=[];
+let upLoadPDFList=ref();
+upLoadPDFList.value=[];
 let content=ref();
 let dialogVisible=ref(false);
+
+
 let upLoadBook=()=>{
   //truth http
   let idcard=getTokenID();
@@ -156,24 +182,45 @@ let upLoadBook=()=>{
   let datetime = getDateTime();
   console.log(datetime);
   console.log(upLoadList.value[0].raw);
-
-  request.post("/home/book/addAccessBook",{
-      bookName:bookNameNew.value,
-      author:authorNew.value,
-      bookType:bookTypeNew.value,
-      isbn:ISBNnew.value,
-      publisher:publisherNew.value,
-      idCard:idcard,
-      name:Name,
-      identity:identity,
-      datetime:datetime,
-      pictureOppositePath:upLoadList.value[0].name,
+  let responseFlage='3';
+  request.post("/home/book/addAccessBook", {
+    bookName:bookNameNew.value,
+    author:authorNew.value,
+    bookType:bookTypeNew.value,
+    isbn:ISBNnew.value,
+    publisher:publisherNew.value,
+    idCard:idcard,
+    name:Name,
+    identity:identity,
+    datetime:datetime,
+    pictureOppositePath:upLoadList.value[0].name,
+    pdfOppositePath:upLoadPDFList.value[0].name,
   }).then(function (res){
     //1成功，2重复，3其他错误
+    responseFlage=res.data;
     if(res.data=="1"){
-      dialogVisible.value=true;
-      content.value="成功上传";
-      console.log("success add book");
+      console.log("success add book half");
+      if(responseFlage=="1"){
+        let formdata=new FormData();
+        formdata.append('image',upLoadList.value[0].raw);
+        formdata.append('pdf',upLoadPDFList.value[0].raw);
+        console.log('formdata');
+        request.post("/home/book/addAccessBookImageAndPdf",
+            formdata).then(function (res){
+          //1成功，3其他错误 是否重复前面一个请求结果已经检查过了
+          if(res.data=="1"){
+            dialogVisible.value=true;
+            content.value="成功上传书籍";
+            console.log("success add book 封面");
+          }
+          else
+            console.log("3 error 其他错误");
+
+        }).catch(function (error){
+          console.log("error add book");
+        });
+
+      }
     }
     else if(res.data=="2"){
       dialogVisible.value=true;
