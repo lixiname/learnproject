@@ -4,7 +4,7 @@ This project is a study management system.
 ___
 **该管理系统是前后端分离的单页面程序，分为前端的vue和后端的springboot两部分，前端vue只负责页面切换，后端只负责数据的处理和响应**
 
-技术栈中前端使用**javascript** + 后端使用**java**语言编写，数据库主要采用mysql.
+技术栈中前端使用**javascript** + 后端使用**java**语言编写，数据库主要采用**mysql**.
 ___
 ## 环境Configuration
 ___
