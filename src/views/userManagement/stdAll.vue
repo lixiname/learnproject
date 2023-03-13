@@ -37,6 +37,12 @@
               @click="updatePassword(scope.$index)">
             重置密码
           </el-button>
+          <el-button
+              size="small"
+              type="success"
+              @click="userDetail(scope,scope.$index)"
+          >详情</el-button
+          >
         </template>
       </el-table-column>
 
@@ -53,6 +59,8 @@ export default {
 <script setup>
 import {onMounted, ref} from "vue";
 import request from "../../http/request.js";
+import { useRouter } from 'vue-router';
+let router=useRouter();
 let userList=ref()
 userList.value=[];
 
@@ -88,6 +96,15 @@ let submitUpdatePassword=()=>{
     console.log("error");
   });
 }
+
+let userDetail=function (scope,index){
+  let id=userList.value[index].ID;
+  router.push({path:'/home/updateUserInformation',
+    query:{
+      userID:id,
+      userIdentity:'student'
+    }});
+};
 
 onMounted(() => {
   request.get("/home/user/std",{

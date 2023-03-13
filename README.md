@@ -22,7 +22,7 @@ ___
 **springboot后端依赖**
 
 `junit、redis、lettuce、mybatis、elasticsearch`<br>
-单元测试、存token的redis库、redis的lettuce封装、负责元组和实体映射的mybatis、查询组件elasticsearch
+单元测试、存token的redis库、redis的lettuce封装、负责元组和实体映射的mybatis、查询组件elasticsearch，这些依赖都采用maven安装和管理
 ___
 ## 项目功能描述
 

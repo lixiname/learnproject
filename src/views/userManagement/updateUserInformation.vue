@@ -63,7 +63,7 @@
                 {{academy}}
               </el-descriptions-item>
 
-              <el-descriptions-item >
+              <el-descriptions-item v-if="managementIdentity!='management'">
                 <template #label>
                   <div>
                     <el-icon><Memo /></el-icon>
@@ -76,7 +76,7 @@
                   </template>
                 </el-input>
               </el-descriptions-item>
-              <el-descriptions-item >
+              <el-descriptions-item v-if="managementIdentity!='management'">
                 <template #label>
                   <div>
                     <el-icon><Memo /></el-icon>
@@ -91,7 +91,7 @@
               </el-descriptions-item>
 
             </el-descriptions>
-            <el-row justify="center">
+            <el-row justify="center" v-if="managementIdentity!='management'">
               <el-col :span="5">
                 <el-button
                     @click="updatePass">确认修改</el-button>
@@ -150,7 +150,7 @@
                 {{academy2}}
               </el-descriptions-item>
 
-              <el-descriptions-item >
+              <el-descriptions-item v-if="managementIdentity!='management'">
                 <template #label>
                   <div>
                     <el-icon><Memo /></el-icon>
@@ -163,7 +163,7 @@
                   </template>
                 </el-input>
               </el-descriptions-item>
-              <el-descriptions-item >
+              <el-descriptions-item  v-if="managementIdentity!='management'">
                 <template #label>
                   <div>
                     <el-icon><Memo /></el-icon>
@@ -177,7 +177,7 @@
                 </el-input>
               </el-descriptions-item>
             </el-descriptions>
-            <el-row justify="center">
+            <el-row justify="center" v-if="managementIdentity!='management'">
               <el-col :span="5">
                 <el-button
                     @click="updatePass">确认修改</el-button>
@@ -201,13 +201,17 @@ export default {
 import { getTokenIdentity, getTokenID} from '../../utils/auth.js'
 import {onMounted, ref} from "vue";
 import request from "../../http/request.js";
+import {useRoute} from "vue-router/dist/vue-router";
+let route=useRoute();
 let teacherName=ref();
 let teacherID=ref();
 let phone2=ref();
 let grade2=ref();
 let academy2=ref();
-
-let identity=getTokenIdentity();
+let identity=ref();
+identity.value=getTokenIdentity();
+let managementIdentity=ref();
+managementIdentity.value='';
 let studentName=ref();
 let studentID=ref();
 let classroom=ref();
@@ -266,10 +270,14 @@ let updatePass=()=>{
 
 }
 
-
 onMounted(() => {
   let id=getTokenID();
-  if(getTokenIdentity()=="student"){
+  if(identity.value=='management'){
+    managementIdentity.value=identity.value;
+    id=route.query.userID;
+    identity.value=route.query.userIdentity;
+  }
+  if(identity.value=="student"){
     request.get("/home/user/oneStd",{
       params:{
         id:id
@@ -290,7 +298,7 @@ onMounted(() => {
       console.log('get  error');
     });
   }
-  else if(getTokenIdentity()=="teacher"){
+  else if(identity.value=="teacher"){
     request.get("/home/user/oneteach",{
       params:{
         id:id

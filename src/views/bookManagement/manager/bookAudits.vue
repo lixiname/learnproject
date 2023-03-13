@@ -1,6 +1,6 @@
 <template>
   <div style="height: 100%;">
-    <el-table :data="bookArray" border="true"  size="small" style="height: 95%;">
+    <el-table :data="bookArray.slice((currentPage-1)*pageSize,currentPage*pageSize)" border="true"  size="small" style="height: 95%;">
       <el-table-column label="书名" prop="bookName" sortable>
       </el-table-column>
       <el-table-column label="作者" prop="author" sortable>
@@ -58,7 +58,12 @@
     </el-table>
     <el-row align="middle" justify="center" >
       <el-col :span="10">
-        <el-pagination layout="sizes,prev,pager,next,jumper" :total="100" :pager-count="6" :page-sizes="pageSize" :small="true" :background="true">
+        <el-pagination layout="sizes,prev,pager,next,jumper" :total="bookListLength" :pager-count="5" :page-sizes="pageSizes"
+                       @size-change="sizesChange"
+                       @current-change="changeCurrentPage"
+                       prev-text="上一页"
+                       next-text="下一页"
+                       :small="true" :background="true">
         </el-pagination>
       </el-col>
     </el-row>
@@ -72,7 +77,7 @@ export default {
   data(){
     return{
 
-      pageSize:[10,20,30,40]
+
     }
   },
   methods:{
@@ -91,6 +96,20 @@ let router=useRouter();
 
 let bookArray=ref();
 bookArray.value=[];
+
+let currentPage=ref(1);
+let pageSize=ref(10);
+let bookListLength=ref(0);
+let pageSizes=ref();
+pageSizes.value=[10,15,20,30];
+let changeCurrentPage=(page)=>{
+  currentPage.value=page;
+}
+let sizesChange=(size)=>{
+  pageSize.value=size;
+}
+
+
 let bookDetail=function (scope,index, row){
   let bookName=bookArray.value[index].bookName;
   let publicateUserNameID=bookArray.value[index].publicateUserNameID;
@@ -171,6 +190,7 @@ onMounted(() => {
           disabled:disabled
         });
       });
+      bookListLength.value=bookArray.value.length;
       console.log(bookArray.value);
       console.log('get booklist success');
     }
