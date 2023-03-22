@@ -109,7 +109,7 @@
                   <div v-if="identity=='teacher'||identity=='super'">
                     <el-menu-item index="3-4" route="/home/addHomework">出题</el-menu-item>
                     <el-menu-item index="3-5" route="/home/thomeworkList">全部作业</el-menu-item>
-                    <el-menu-item index="3-6" route="/home/stdHomeworkScore">作业成绩</el-menu-item>
+                    <el-menu-item index="3-6" route="/home/homeworkPublicate">作业成绩</el-menu-item>
                   </div>
                     <!--                  <el-menu-item index="3-1" route="/home/homeworkRequest">案例查阅</el-menu-item>-->
                     <!--                  <el-menu-item index="3-2" route="/home/processHomework">案例上传</el-menu-item>-->

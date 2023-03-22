@@ -62,3 +62,5 @@ export function getDay(day){
     let dayInt=strLists[2];
     return dayInt;
 }
+
+

@@ -3,26 +3,35 @@
     <el-table-column label="试卷名" sortable>
       <template #default="scope">
         <el-icon color="rgb(244,192,70)"><Notebook /></el-icon>
-        <span>{{scope.row.fileName}}</span>
+        <span>{{scope.row.testName}}</span>
       </template>
     </el-table-column>
     <el-table-column label="班级" prop="room" sortable>
     </el-table-column>
-    <el-table-column label="老师" prop="tname" sortable>
+    <el-table-column label="老师" prop="t_name" sortable>
     </el-table-column>
-    <el-table-column label="课件学习时间段"  >
-      <el-table-column label="开始时间"  prop="start"></el-table-column>
-      <el-table-column label="截止时间"  prop="end"></el-table-column>
+    <el-table-column label="答题总时间限制" prop="time_limit" sortable>
     </el-table-column>
+    <el-table-column label="试卷答题时间段"  >
+      <el-table-column label="开始时间"  prop="start_time"></el-table-column>
+      <el-table-column label="截止时间"  prop="end_time"></el-table-column>
+    </el-table-column>
+
+
     <el-table-column>
       <template #default="scope" >
-        <el-button
-            size="small"
+        <el-button v-if="scope.row.exists==false"
+            size="small" type="success"
             plain
             @click="dohomework(scope.$index)"
-        >做题</el-button
-        >
+        >做题</el-button>
+        <el-button v-else-if="scope.row.exists==true"
+            size="small"
+            plain
+            @click="detail(scope.$index)"
+        >详情</el-button>
       </template>
+
     </el-table-column >
   </el-table>
 </template>
@@ -58,23 +67,28 @@ let fileName=ref();
 
 
 let dohomework=(index)=>{
-  let fileName=lists.value[index].fileName;
-  let tid=lists.value[index].tid;
-  let term=lists.value[index].term;
-  let room=lists.value[index].room;
+  let test_id=lists.value[index].test_id;
   router.push({path:'/home/doHomework',
     query:{
-      fileName:fileName,
-      tid:tid,
-      term:term,
-      room:room
+      test_id:test_id
     }});
 }
 
+let detail=function (index){
+  let std_idcard=getTokenID();
+  let test_id=lists.value[index].test_id;
+  router.push({path:'/home/oneTestScoreView',
+    query:{
+      test_id:test_id,
+      std_idcard:std_idcard
+    }});
+};
+
+let existList=ref();
+existList.value=[];
 
 onMounted(() => {
   let idcard=getTokenID();
-  console.log(idcard);
   let grade,classroom;
   request.get("/home/user/oneStd",{
     params:{
@@ -87,7 +101,7 @@ onMounted(() => {
       classroom=res.data.classroom;
       console.log(grade);
       console.log(classroom);
-      request.get("/home/homework/homeworkpubList",{
+      request.get("/home/homework/oneStdHomeworkpubList",{
         params:{
           term:grade,
           room:classroom
@@ -97,9 +111,49 @@ onMounted(() => {
           console.log(res.data);
           res.data.forEach(function (element){
             console.log(element);
-            lists.value=res.data;
+            existList.value.push("false");
           });
-          console.log(' success ');
+          lists.value=res.data;
+          console.log(existList.value.length);
+          lists.value.forEach(function (element){
+            request.get("/home/homework/oneStdScoreExist",{
+              params:{
+                test_id:element.test_id,
+                std_idcard:idcard
+              }
+            }).then(function (res){
+              console.log("element  "+res.data);
+              let result=res.data;
+              if(result==true)
+                element.exists=true;
+              else if(result==false)
+                element.exists=false;
+              console.log(existList.value);
+            });
+          });
+          for(let i=0;i<lists.value.length;i++){
+            let element=lists.value[i];
+            request.get("/home/homework/oneStdScoreExist",{
+              params:{
+                test_id:element.test_id,
+                std_idcard:idcard
+              }
+            }).then(function (res){
+              console.log("element  "+res.data);
+              let result=res.data;
+              console.log(result);
+              //existList.value[i]=true;
+              if(result==true)
+                existList.value[i]=true;
+              else if(result==false)
+                existList.value[i]=false;
+              console.log(existList.value);
+            });
+          }
+
+        }
+        else{
+          console.log(' no data ');
         }
       }).catch(function(error) {
         console.log('error');

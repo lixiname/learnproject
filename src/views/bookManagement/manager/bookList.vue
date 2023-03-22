@@ -98,8 +98,13 @@ let sizesChange=(size)=>{
   pageSize.value=size;
 }
 
+let getOppositeIndex=(index)=>{
+  index+=pageSize.value*(currentPage.value-1);
+  return index;
+}
 
 let bookDetail=function (scope,index, row){
+  index=getOppositeIndex(index);
   let bookName=bookArray.value[index].bookName;
   let publicateUserName=bookArray.value[index].publicateUserName;
   let publicateUserNameID=bookArray.value[index].publicateUserNameID;
@@ -111,6 +116,7 @@ let bookDetail=function (scope,index, row){
     }});
 };
 let bookEdit=function (scope,index, row){
+  index=getOppositeIndex(index);
   let bookName=bookArray.value[index].bookName;
   let publicateUserNameID=bookArray.value[index].publicateUserNameID;
   router.push({path:'/home/bookCorrection',
@@ -121,6 +127,7 @@ let bookEdit=function (scope,index, row){
 };
 
 let bookDelete=(scope,index)=>{
+  index=getOppositeIndex(index);
   console.log(index);
   let deleteBook=bookArray.value[index];
   let bookName=deleteBook.bookName;

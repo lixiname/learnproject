@@ -1,13 +1,4 @@
 <template>
-  <el-dialog
-      title="提示"
-      v-model="dialogVisible"
-      width="30%">
-    <span>成功提交试卷</span>
-    <span slot="footer" >
-        <el-button type="primary" @click="toLast">确 定</el-button>
-      </span>
-  </el-dialog>
   <el-row justify="center">
     <el-col :span="15">
       <el-card>
@@ -57,7 +48,9 @@
               <el-col :span="8">
                 <span>题号{{item.quest_number}}</span>
               </el-col>
-
+              <el-col :span="8">
+                正确选项{{item.correct_answer}}
+              </el-col>
               <el-col :span="8">
                 该题目时间限制{{item.time_limit}}秒
               </el-col>
@@ -84,27 +77,8 @@
                 </el-col>
               </el-row>
             </div>
-
-            <el-col :span="8">
-              请选择
-              <el-input v-model="answerList[index]" >
-                <template #prefix>
-                  <el-icon><Memo /></el-icon>
-                </template>
-              </el-input>
-            </el-col>
           </div>
         </div>
-        <el-row justify="center">
-          <el-col :span="5" v-if="opens==false">
-            <el-button
-                @click="upLoadTest" :disabled="opens">提交试卷</el-button>
-          </el-col>
-          <el-col :span="5">
-            <el-button v-if="opens==true"
-                :disabled="opens">已提交试卷</el-button>
-          </el-col>
-        </el-row>
       </el-card>
     </el-col>
   </el-row>
@@ -124,7 +98,6 @@ import request from "../../../http/request";
 let dialogVisible=ref(false);
 
 let route=useRoute();
-let router=useRoute();
 let test_id=route.query.test_id;
 
 
@@ -137,70 +110,9 @@ let count=ref(1);
 let tname=ref('');
 let addQuestList=ref();
 addQuestList.value=[];
-
-let stdQuestList=ref();
-stdQuestList.value=[];
-let std_idcard=getTokenID();
-let name=getTokenN();
-let startTime='';
-let upLoadTest=()=>{
-  let endTime=getDateTime();
-  let correct_count=0;
-  stdQuestList.value=[];
-  console.log(answerList.value[0]);
-  for(let i=0;i<addQuestList.value.length;i++){
-    let answer=answerList.value[i];
-    let quest_id=addQuestList.value[i].questId;
-    let flage=0;
-    if(addQuestList.value[i].correct_answer==answerList.value[i]){
-      flage=1;correct_count++;
-    }
-    stdQuestList.value.push({
-      std_idcard:std_idcard,
-      quest_id:quest_id,
-      answer:answer,
-      correct_or_not:flage,
-    });
-  }
-  let std_test={
-        stdIdcard:std_idcard,
-        testId:test_id,
-        start_time:startTime,
-        end_time:endTime,
-        correct_count:correct_count
-  };
-  console.log(std_test);
-  console.log(stdQuestList.value);
-  request.post("/home/homework/doTest",{
-    std_test:std_test,
-    std_quest:stdQuestList.value
-  }).then(function(res) {
-    if(res.data){
-      dialogVisible.value=true;
-      console.log(' success');
-    }
-  }).catch(function(error) {
-    console.log('error');
-  });
-
-}
-let opens=ref(false);
-let toLast=()=>{
-  dialogVisible = false;
-  opens.value=true;
-  // router.push({path:'/home/shomeworkAll',
-  //   query:{
-  //   }});
-};
-
-
-
-
-let answerList=ref();
-answerList.value=[];
 onMounted(() => {
-  startTime=getDateTime();
   let idcard=getTokenID();
+  console.log(idcard);
   request.get("/home/homework/homeworkNoPublicateOne",{
     params:{
       test_id:test_id
@@ -217,14 +129,12 @@ onMounted(() => {
       addQuestList.value=res.data.quest_list;
       console.log(' success ');
       console.log(addQuestList.value);
-      for(let i=0;i<addQuestList.value.length;i++){
-        answerList.value.push("");
-      }
-
     }
   }).catch(function(error) {
     console.log('error');
   });
+
+
 
 });
 </script>

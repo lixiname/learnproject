@@ -116,7 +116,13 @@ let sizesChange=(size)=>{
   pageSize.value=size;
 }
 
+let getOppositeIndex=(index)=>{
+  index+=pageSize.value*(currentPage.value-1);
+  return index;
+}
+
 let bookDetail=function (scope,index, row){
+  index=getOppositeIndex(index);
   let bookName=bookArray.value[index].bookName;
   let publicateUserNameID=bookArray.value[index].publicateUserNameID;
   router.push({path:'/home/userBookView',
@@ -128,6 +134,7 @@ let bookDetail=function (scope,index, row){
 };
 
 let downLoad=(scope,index)=>{
+  index=getOppositeIndex(index);
   let book=bookArray.value[index];
   let bookName=book.bookName;
   let publicateUserNameID=book.publicateUserNameID;
@@ -154,6 +161,7 @@ let downLoad=(scope,index)=>{
 let content=ref();
 let dialogVisible=ref(false);
 let bookAgreed=(scope,index)=>{
+  index=getOppositeIndex(index);
   let book=bookArray.value[index];
   let bookName=book.bookName;
   let publicateUserNameID=book.publicateUserNameID;

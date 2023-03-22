@@ -1,79 +1,32 @@
 <template>
-  <el-row justify="center">
-    <el-col :span="15">
-      <el-card>
-        <template #header>
-          <div>
-            <span>上传题目</span>
-          </div>
-        </template>
-        <div>
-          <el-dropdown @command="handleSelectTermCommand">
-            <el-button>
-              选择知识点种类<el-icon ><arrow-down /></el-icon>
-            </el-button>
-            <template #dropdown>
-              <el-dropdown-menu>
-                <div v-for="item in classroomList">
-                  <el-dropdown-item :command="item.term">{{item.term}}级</el-dropdown-item>
-                </div>
-              </el-dropdown-menu>
-            </template>
-          </el-dropdown>
-          <el-dropdown @command="handleSelectTermCommand">
-            <el-button>
-              选择题型年份<el-icon ><arrow-down /></el-icon>
-            </el-button>
-            <template #dropdown>
-              <el-dropdown-menu>
-                <div v-for="item in classroomList">
-                  <el-dropdown-item :command="item.term">{{item.term}}级</el-dropdown-item>
-                </div>
-              </el-dropdown-menu>
-            </template>
-          </el-dropdown>
-          <div></div>
-          <el-form  label-position="right">
-            <el-form-item label="填写题干要求">
-              <el-input v-model="title" placeholder="例如假设f(x)是偶函数这样的描述内容"  type="textarea">
-                <template #prefix>
-                  <el-icon><Document /></el-icon>
-                </template>
-              </el-input>
-            </el-form-item>
-            <el-form-item label="设置选项">
-              <el-icon><CirclePlusFilled /></el-icon>
-              <el-icon><RemoveFilled /></el-icon>
-            </el-form-item>
-            <el-form-item label="A">
-              <el-input v-model="title" placeholder="填写答案描述"  >
-                <template #prefix>
-                  <el-icon><Document /></el-icon>
-                </template>
-              </el-input>
-            </el-form-item>
-            <el-form-item label="B">
-              <el-input v-model="title" placeholder="填写答案描述"  >
-                <template #prefix>
-                  <el-icon><Document /></el-icon>
-                </template>
-              </el-input>
-            </el-form-item>
-            <el-button
-                type="primary"
-                class="loginBtn"
-                @click="login"
-            >
-              提交
-            </el-button>
-          </el-form>
-
-        </div>
-      </el-card>
-    </el-col>
-  </el-row>
-
-
+  <el-table :data="pubHomeworkArray" border="true"  size="small" style="height: 95%;">
+    <el-table-column label="试卷" sortable>
+      <template #default="scope">
+        <el-icon color="rgb(244,192,70)"><Notebook /></el-icon>
+        <span>{{scope.row.test_name}}</span>
+      </template>
+    </el-table-column>
+    <el-table-column label="发布时间" prop="publish_time" sortable>
+    </el-table-column>
+    <el-table-column label="年级" prop="term" sortable>
+    </el-table-column>
+    <el-table-column label="班级" prop="room" sortable>
+    </el-table-column>
+    <el-table-column label="开始时间" prop="start_time" sortable>
+    </el-table-column>
+    <el-table-column label="截止时间" prop="end_time" sortable>
+    </el-table-column>
+    <el-table-column>
+      <template #default="scope" >
+        <el-button
+            size="small"
+            type="success"
+            @click="scoreDetail(scope.$index)"
+        >详情</el-button
+        >
+      </template>
+    </el-table-column >
+  </el-table>
 </template>
 
 <script>
@@ -82,13 +35,55 @@ export default {
 }
 </script>
 <script setup>
-import {ref, reactive, onMounted} from "vue";
-import { useRouter,useRoute } from 'vue-router';
-let title=ref();
+import {onMounted, ref} from "vue";
+import request from "../../../http/request";
+import {useRoute,useRouter} from "vue-router/dist/vue-router";
+import {getTokenID} from "../../../utils/auth";
+
+let router=useRouter();
+let pubHomeworkArray=ref();
+pubHomeworkArray.value=[];
+
+let scoreDetail=(index)=>{
+  let test_id=pubHomeworkArray.value[index].test_id;
+  router.push({path:'/home/stdHomeworkScore',
+    query:{
+      test_id:test_id
+    }});
+}
+
+onMounted(() => {
+  let idcard=getTokenID();
+  console.log("t_id"+idcard);
+  request.get("/home/homework/pubHomeworkList",{
+    params:{
+      idcard:idcard
+    }
+  }).then(function(res) {
+    if(res.data){
+      console.log(res.data);
+      res.data.forEach(function (element){
+        console.log("element");
+        console.log(element);
+        pubHomeworkArray.value.push({
+          test_name:element.test_name,
+          test_id:element.testId,
+          publish_time:element.publish_time,
+          start_time:element.start_time,
+          end_time:element.end_time,
+          room:element.room,
+          term:element.term
+        });
+      });
+      console.log('get  success ');
+    }
+  }).catch(function(error) {
+    console.log('get  error');
+  });
 
 
+});
 </script>
-
 <style scoped>
 
 </style>

@@ -42,13 +42,16 @@
     <el-table-column label="试卷名" sortable>
       <template #default="scope">
         <el-icon color="rgb(244,192,70)"><Notebook /></el-icon>
-        <span>{{scope.row.fileName}}</span>
+        <span>{{scope.row.testName}}</span>
       </template>
     </el-table-column>
-    <el-table-column label="问题序号" prop="quest" sortable>
+    <el-table-column label="做题限制时间" prop="time_limit" sortable>
     </el-table-column>
-    <el-table-column label="正确答案" prop="flage" sortable>
+    <el-table-column label="题目数量" prop="count" sortable>
     </el-table-column>
+    <el-table-column label="试卷上传时间" prop="upload_time" sortable>
+    </el-table-column>
+
     <el-table-column>
       <template #default="scope" >
         <el-button
@@ -56,6 +59,12 @@
                    plain
                    @click="submitPublication(scope.$index)"
         >发布试题</el-button
+        >
+        <el-button
+            size="small"
+            type="success"
+            @click="detail(scope.$index)"
+        >详情</el-button
         >
       </template>
     </el-table-column >
@@ -72,6 +81,7 @@ import {ref, reactive, onMounted} from "vue";
 import { useRouter,useRoute } from 'vue-router';
 import {getDateTime, getTokenID, getTokenIdentity, getTokenN} from "../../../utils/auth";
 import request from "../../../http/request";
+let router=useRouter();
 let lists=ref();
 lists.value=[];
 
@@ -82,16 +92,15 @@ roomListCheck.value=[];
 let classroomList=ref();
 classroomList.value=[];
 
-
-let upLoadList=ref();
 let upLoadCollationList=ref();
 upLoadCollationList.value=[];
 let dialogVisible=ref(false);
 let publicationItemIndex=0;
 let visible=ref(false);
-let fileName=ref();
+let testName=ref();
+let test_id=ref(1);
 let submitPublication=(index)=>{
-  fileName.value=lists.value[index].fileName;
+  test_id.value=lists.value[index].test_id;
   dialogVisible.value=true;
   visible.value=false;
   publicationItemIndex=index;
@@ -103,16 +112,18 @@ let studyFileName=ref();
 let submitSelectClassroomAndPublication=()=>{
   let idcard=getTokenID();
   let Name=getTokenN();
+  let date=getDateTime();
   roomListCheck.value.forEach(function (element){
     //mock home/knowledgeList/publicateToClassroom
-    request.post("/home/homework/pubhomework",{
+    request.post("/home/homework/publicateHomework",{
+      test_id:test_id.value,
       tid:idcard,
-      fileName:fileName.value,
       term:term.value,
       room:element,
       tname:Name,
-      start:'2022-11-13 10:10:12',
-      end:'2022-11-17 10:10:12',
+      start:'2023-3-10 10:10:12',
+      end:'2023-3-17 10:10:12',
+      pub:date,
     }).then(res=>{
       console.log('success');
     }).catch(err=>{});
@@ -151,12 +162,24 @@ let handleSelectTermCommand=(command)=>{
 
 }
 
+
+let detail=function (index){
+  //index=getOppositeIndex(index);
+  let test_id=lists.value[index].test_id;
+  router.push({path:'/home/homeworkDetail',
+    query:{
+      test_id:test_id
+    }});
+};
+
+
+
 onMounted(() => {
   let idcard=getTokenID();
   console.log(idcard);
-  request.get("/home/homework/homeworkList",{
+  request.get("/home/homework/homeworkNoPublicateList",{
     params:{
-      tid:idcard
+      idcard:idcard
     }
   }).then(function(res) {
     if(res.data){

@@ -18,6 +18,7 @@ import  stdSituationList from "../views/informationManagement/student/stdSituati
 
 import homeworkTime from '../views/homeworkManagement/student/homeworkTime.vue'
 import processHomework from '../views/homeworkManagement/student/processHomework.vue'
+import homeworkDetail from '../views/homeworkManagement/teacher/HomeworkDetail.vue'
 import homeworkPublicate  from "../views/homeworkManagement/teacher/homeworkPublicate.vue";
 import  updateUserInformation from "../views/userManagement/updateUserInformation.vue";
 import  stdAll from "../views/userManagement/stdAll.vue"
@@ -28,6 +29,8 @@ import  homeworkAll from "../views/homeworkManagement/student/homeworkAll.vue";
 import  addHomework from "../views/homeworkManagement/teacher/addHomework.vue";
 import  homeworkList from "../views/homeworkManagement/teacher/homeworkList.vue";
 import  stdHomeworkScore from "../views/homeworkManagement/teacher/stdHomeworkScore.vue";
+import  oneTestScoreView from "../views/homeworkManagement/student/oneTestScoreView.vue";
+
 
 
 import  sharedBookList from "../views/userManagement/uploadBookList.vue"
@@ -177,6 +180,13 @@ const routes=[
                 name: 'addHomework'
             },
             {
+                path:'homeworkDetail',
+                component:homeworkDetail,
+                name: 'homeworkDetail'
+            },
+
+
+            {
                 path:'thomeworkList',
                 component:homeworkList,
                 name: 'thomeworkList'
@@ -186,6 +196,14 @@ const routes=[
                 component:stdHomeworkScore,
                 name: 'stdHomeworkScore'
             },
+            {
+                path:'oneTestScoreView',
+                component:oneTestScoreView,
+                name: 'oneTestScoreView'
+            },
+
+
+
 
             {
                 path:'schoolNewStd',

@@ -23,7 +23,7 @@
     </el-card>
   </el-dialog>
   <div style="height: 100%;">
-    <el-table :data="userList" height="70%">
+    <el-table :data="userList.slice((currentPage-1)*pageSize,currentPage*pageSize)" height="70%">
       <el-table-column type="selection"></el-table-column>
       <el-table-column label="老师"  prop="name" sortable></el-table-column>
       <el-table-column label="ID"  prop="ID" sortable></el-table-column>
@@ -47,6 +47,17 @@
       </el-table-column>
 
     </el-table>
+    <el-row align="middle" justify="center" >
+      <el-col :span="10">
+        <el-pagination layout="sizes,prev,pager,next,jumper" :total="bookListLength" :pager-count="5" :page-sizes="pageSizes"
+                       @size-change="sizesChange"
+                       @current-change="changeCurrentPage"
+                       prev-text="上一页"
+                       next-text="下一页"
+                       :small="true" :background="true">
+        </el-pagination>
+      </el-col>
+    </el-row>
 
   </div>
 </template>
@@ -69,10 +80,29 @@ let dialogVisible=ref(false);
 let dialogVisibleSuccess=ref(false);
 let indexj=ref();
 let updatePassword=(index)=>{
+  index=getOppositeIndex(index);
   indexj.value=index;
   console.log('indexj');
   dialogVisible.value=true;
 }
+
+let currentPage=ref(1);
+let pageSize=ref(10);
+let bookListLength=ref(0);
+let pageSizes=ref();
+pageSizes.value=[10,15,20,30];
+let changeCurrentPage=(page)=>{
+  currentPage.value=page;
+}
+let sizesChange=(size)=>{
+  pageSize.value=size;
+}
+
+let getOppositeIndex=(index)=>{
+  index+=pageSize.value*(currentPage.value-1);
+  return index;
+}
+
 
 let password=ref();
 let submitUpdatePassword=()=>{
@@ -99,6 +129,7 @@ let submitUpdatePassword=()=>{
 }
 
 let userDetail=function (scope,index){
+  index+=pageSize.value*(currentPage.value-1);
   let id=userList.value[index].ID;
   router.push({path:'/home/updateUserInformation',
     query:{
@@ -121,6 +152,7 @@ onMounted(() => {
           phone:element.phone
         });
       });
+      bookListLength.value=userList.value.length;
       console.log('get  success');
     }
   }).catch(function(error) {
